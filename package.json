@@ -1,0 +1,22 @@
+{
+  "name": "eri-tst",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "@erisa/commands": "^0.0.3",
+    "@erisa/logger": "^0.0.3-0",
+    "erisa": "^0.0.3",
+    "redite": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.11.7",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.3"
+  }
+}
