@@ -7,8 +7,8 @@ import * as path from 'path';
 import {token, prefixes, owner, dbURL} from './config.json';
 import {ICheeseSettings, IHealthSettings} from './types';
 
-// const INTERVAL = 1000 * 60 * 60 * 24;
-const INTERVAL = 1000 * 10;
+const INTERVAL = 1000 * 60 * 60 * 24;
+// const INTERVAL = 1000 * 10;
 
 function sample<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)];
