@@ -4,8 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node index.ts",
-    "build": "tsc -p ."
+    "dev": "ts-node index.ts",
+    "build": "tsc -p .",
+    "start": "cd dist && node index.js"
   },
   "dependencies": {
     "@erisa/commands": "^0.0.3",
