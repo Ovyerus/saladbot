@@ -16,10 +16,10 @@
   dependencies:
     colorette "^1.0.5"
 
-"@types/node@^10.11.7":
-  version "10.11.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.7.tgz#0e75ca9357d646ca754016ca1d68a127ad7e7300"
-  integrity sha512-yOxFfkN9xUFLyvWaeYj90mlqTJ41CsQzWKS3gXdOMOyPVacUsymejKxJ4/pMW7exouubuEeZLJawGgcNGYlTeg==
+"@types/node@^10.12.0":
+  version "10.12.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.0.tgz#ea6dcbddbc5b584c83f06c60e82736d8fbb0c235"
+  integrity sha512-3TUHC3jsBAB7qVRGxT6lWyYo2v96BMmD2PTcl47H25Lu7UXtFH/2qqmKiVrnel6Ne//0TFYf6uvNX+HW2FRkLQ==
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -302,10 +302,10 @@ redis@^2.8.0:
     redis-commands "^1.2.0"
     redis-parser "^2.6.0"
 
-redite@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/redite/-/redite-3.0.0.tgz#7e2e31e44d316512b56c03ba24be94a9d5177e90"
-  integrity sha512-uoQZGBSuyumpuEWjDbGB8Iy22wmZvXpjT3akZVPBOXNjISRn3Nfzu9OitYpTYahBlZGgoJ8PcmTStw4qn7TV7w==
+redite@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/redite/-/redite-3.0.1.tgz#933b65a0508960bc0b540fc470c829a2c98a5c6b"
+  integrity sha512-mX0kjxiOaw7uuhDzOsmRgfWnxSFr+Tnws0n1mF4+Z0l/GN1sup6OF/P5uSWUuCjCycXnDbJFeM3JBC/lUwaTyw==
   dependencies:
     redis "^2.8.0"
 
