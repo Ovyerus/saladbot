@@ -9,7 +9,7 @@
         "resolveJsonModule": true,
         "outDir": "dist"
     },
-    "files": [
+    "include": [
         "index.ts",
         "cmds/"
     ]
