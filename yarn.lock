@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@erisa/commands@^0.0.3-1":
-  version "0.0.3-1"
-  resolved "https://registry.yarnpkg.com/@erisa/commands/-/commands-0.0.3-1.tgz#8e95fde0e5728ba5eb0089027dd2b68d48d27887"
-  integrity sha512-Ww1DhxKNSJbL+LRsM/QVHuGcm+KiblVOSSpgxOrJ7okL5tSyv7ZxPLHfqpvtXHBuyKOdoHyxgKq5nivfY8BW/A==
+"@erisa/commands@^0.0.3-2":
+  version "0.0.3-2"
+  resolved "https://registry.yarnpkg.com/@erisa/commands/-/commands-0.0.3-2.tgz#faff35d592d9076f494328fac240a34027f22420"
+  integrity sha512-gxYXOHeQQEaek0Ri3wn0zV7oDYrcYoekzvU7KLk2W7cj7d+z4/cDaBwSa+TFK/jxOv/j0TtFfyazasNsHLVFfw==
   dependencies:
     getopts "^2.2.1"
     split-string "^6.0.0"
