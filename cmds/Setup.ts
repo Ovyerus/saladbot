@@ -1,6 +1,6 @@
-import {Command, Context} from '@erisa/commands';
+import {Command, GuildContext} from '@erisa/commands';
+import {Constants, TextChannel} from 'eris';
 import {SaladBot} from '..';
-import {Guild, Constants, TextChannel, Member} from 'eris';
 
 const {Permissions} = Constants;
 const CHEESE_EVERYONE_ALLOW = Permissions.readMessages;
@@ -11,11 +11,6 @@ const CHEESE_ROLE_EVERYWHERE_DENY = Permissions.sendMessages;
 
 const HEALTH_SELF_ALLOW = CHEESE_ROLE_ALLOW;
 const HEALTH_EVERYONE_DENY = CHEESE_EVERYONE_DENY;
-
-class GuildContext extends Context {
-    guild: Guild;
-    me: Member;
-}
 
 interface IInitialSaladSettings {
     cheeseRole?: string;
@@ -28,8 +23,7 @@ export default class Setup extends Command {
     guildOnly = true;
     permissions = {
         self: ['manageRoles', 'manageChannels', 'sendMessages'],
-        author: 'manageGuild',
-        both: 'sendMessages'
+        author: 'manageGuild'
     };
     bot: SaladBot;
 
