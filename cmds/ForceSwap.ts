@@ -21,8 +21,7 @@ export default class ForceSwap extends Command {
 
         const {
             cheeseChannel,
-            cheeseRole,
-            lastCheeseSwap
+            cheeseRole
         }: ICheeseSettings = await this.bot.db[ctx.guild.id];
 
         if (!ctx.guild.channels.get(cheeseChannel) || !ctx.guild.roles.get(cheeseRole)) {
