@@ -5,6 +5,9 @@ import {ICheeseSettings} from '../types';
 export default class ForceSwap extends Command {
     overview = 'Forces a cheese touch swap.';
     guildOnly = true;
+    permissions = {
+        author: 'manageGuild'
+    };
 
     constructor(public bot: SaladBot) {
         super();
