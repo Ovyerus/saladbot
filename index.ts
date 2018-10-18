@@ -7,7 +7,8 @@ import * as path from 'path';
 import {token, prefixes, owner, dbURL} from './config.json';
 import {ICheeseSettings, IHealthSettings} from './types';
 
-const INTERVAL = 1000 * 60 * 60 * 24;
+export const INTERVAL = 1000 * 60 * 60 * 24;
+const TIMER_INTERVAL = 1000 * 60 * 60;
 // const INTERVAL = 1000 * 10;
 
 function sample<T>(arr: T[]): T {
@@ -17,8 +18,9 @@ function sample<T>(arr: T[]): T {
 export class SaladBot extends Erisa {
     public db: Redite = new Redite({url: dbURL});
     public timer: NodeJS.Timer;
+    public lastTimerRun: number;
 
-    async doCheeseSwap(guild: Guild) {
+    async doCheeseSwap(guild: Guild, force?: boolean) {
         if (!await this.db.has(guild.id)) return;
 
         const {
@@ -27,7 +29,7 @@ export class SaladBot extends Erisa {
             lastCheeseSwap
         }: ICheeseSettings = await this.db[guild.id];
 
-        if (!lastCheeseSwap || Date.now() - lastCheeseSwap >= INTERVAL) {
+        if (force || (!lastCheeseSwap || Date.now() - lastCheeseSwap >= INTERVAL)) {
             const channel: TextChannel | undefined = guild.channels.get(cheeseChannel) as TextChannel | undefined;
 
             if (!channel) return;
@@ -88,7 +90,9 @@ bot.use('ready', () => {
             await bot.doCheeseSwap(guild);
             await bot.doHealthUpdate(guild);
         }
-    }, INTERVAL);
+
+        bot.lastTimerRun = Date.now();
+    }, TIMER_INTERVAL);
 });
 
 bot.connect();
