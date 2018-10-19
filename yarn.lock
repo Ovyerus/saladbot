@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@erisa/commands@^0.0.3-2":
-  version "0.0.3-2"
-  resolved "https://registry.yarnpkg.com/@erisa/commands/-/commands-0.0.3-2.tgz#faff35d592d9076f494328fac240a34027f22420"
-  integrity sha512-gxYXOHeQQEaek0Ri3wn0zV7oDYrcYoekzvU7KLk2W7cj7d+z4/cDaBwSa+TFK/jxOv/j0TtFfyazasNsHLVFfw==
+"@erisa/commands@^0.0.3-3":
+  version "0.0.3-3"
+  resolved "https://registry.yarnpkg.com/@erisa/commands/-/commands-0.0.3-3.tgz#8ec76ee4f67cfe4e10dfb4ccd6f3a563b9584c83"
+  integrity sha512-jo4y0IhnQikWjJ8EPdvSCmV/h9GsfY1+Wyxs0M9w2onA2jp+qLwJfRKFjz70JBwYGfO0TWsH796SEKFbVdGaqw==
   dependencies:
     getopts "^2.2.1"
     split-string "^6.0.0"
@@ -184,9 +184,9 @@ fs.realpath@^1.0.0:
   integrity sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
 
 getopts@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/getopts/-/getopts-2.2.1.tgz#68120d77abf420e1ade52291977ce050f33ce54e"
-  integrity sha512-ga4ofUeKxyViBrNaO1asJZSG4JEbzqfKyYhHzDQkVrjgYR8WD+2RBkziKlkcv9JvHRgmjbMQWP3bjlSkiH57sg==
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/getopts/-/getopts-2.2.2.tgz#a6ada98961c3d1f099e88f0698fabe716f8a253c"
+  integrity sha512-qX9XmOFViBolzBfWkBKOP/HOO8VSgy6reZMVWo/QvCmwXJLZU5idp4W+L70CM8SPBRBwgrCyU65IKKr40zgizw==
 
 glob@^7.1.1:
   version "7.1.3"
