@@ -77,7 +77,8 @@ bot.usePairsArray(commands(bot, {
     autoLoad: true,
     commandDirectory: path.resolve('./cmds/') + path.sep,
     owner,
-    prefixes
+    prefixes,
+    debug: true
 }));
 
 bot.use('ready', () => {
