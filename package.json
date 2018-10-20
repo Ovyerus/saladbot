@@ -9,7 +9,7 @@
     "start": "cd dist && node index.js"
   },
   "dependencies": {
-    "@erisa/commands": "^0.0.4",
+    "@erisa/commands": "^0.0.4-0",
     "@erisa/logger": "^0.0.3-0",
     "erisa": "^0.0.3",
     "redite": "^3.0.1"
