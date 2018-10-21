@@ -1,5 +1,5 @@
 import {Command, GuildContext} from '@erisa/commands';
-import {INTERVAL, SaladBot} from '..';
+import {INTERVAL, SaladBot, TIMER_INTERVAL} from '..';
 import {ICheeseSettings} from '../types';
 
 export default class NextSwap extends Command {
@@ -27,15 +27,15 @@ export default class NextSwap extends Command {
             return;
         }
 
-        const time = Date.now() - lastCheeseSwap;
+        const time = Date.now() - (lastCheeseSwap + INTERVAL);
 
         // Last swap was over 24 hours ago, probably still waiting on the timer to happen.
         if (time >= INTERVAL) {
-            const probableTime = Date.now() - this.bot.lastTimerRun;
+            const probableTime = Date.now() - (this.bot.lastTimerRun + TIMER_INTERVAL);
 
             await ctx.send(`Next cheese touch swap will probably happen in ${timeFormat(probableTime)}`);
         } else
-            await ctx.send(`Next cheese touch will happen in aboout ${timeFormat(time)}`);
+            await ctx.send(`Next cheese touch will happen in about ${timeFormat(time)}`);
     }
 }
 

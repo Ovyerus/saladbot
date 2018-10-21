@@ -8,7 +8,7 @@ import {token, prefixes, owner, dbURL} from './config.json';
 import {ICheeseSettings, IHealthSettings} from './types';
 
 export const INTERVAL = 1000 * 60 * 60 * 24;
-const TIMER_INTERVAL = 1000 * 60 * 60;
+export const TIMER_INTERVAL = 1000 * 60 * 60;
 // const INTERVAL = 1000 * 10;
 
 function sample<T>(arr: T[]): T {
