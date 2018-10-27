@@ -35,7 +35,7 @@ export class SaladBot extends Erisa {
             if (!channel) return;
 
             const currentCheese = guild.members.find(m => m.roles.includes(cheeseRole));
-            const eligable = guild.members.filter(m => (currentCheese ? m.id !== currentCheese.id : true) && !m.bot);
+            const eligable = guild.members.filter(m => (currentCheese ? m.id !== currentCheese.id : true) && !m.bot && !!m.roles.length);
             const newCheese = sample(eligable);
 
             if (!newCheese) {
@@ -95,5 +95,7 @@ bot.use('ready', () => {
         bot.lastTimerRun = Date.now();
     }, TIMER_INTERVAL);
 });
+
+bot.use('error', () => {});
 
 bot.connect();
