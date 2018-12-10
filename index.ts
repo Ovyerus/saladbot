@@ -73,7 +73,7 @@ export class SaladBot extends Erisa {
 const bot = new SaladBot(token);
 
 bot.use(logger(bot));
-bot.usePairsArray(commands(bot, {
+bot.use(commands(bot, {
     autoLoad: true,
     commandDirectory: path.resolve('./cmds/') + path.sep,
     owner,

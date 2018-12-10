@@ -62,7 +62,7 @@
         "no-duplicate-variable": true,
         "no-dynamic-delete": false,
         "no-empty": false,
-        "no-eval": true,
+        "no-eval": false,
         "no-for-in-array": true,
         "no-inferred-empty-object-type": true,
         "no-invalid-template-strings": true,
