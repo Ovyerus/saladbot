@@ -1,5 +1,5 @@
 import {Command, GuildContext} from '@erisa/commands';
-import { SaladBot } from '..';
+import {SaladBot} from '..';
 import {ICheeseSettings} from '../types';
 
 export default class ForceSwap extends Command {
