@@ -140,6 +140,7 @@ export default class Setup extends Command {
             cheeseRole,
             cheeseChannel,
             healthChannel,
+            canTransferCheese: true,
             lastCheeseSwap: 0,
             lastHealthUpdate: 0
         });

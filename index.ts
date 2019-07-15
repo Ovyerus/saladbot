@@ -15,6 +15,9 @@ function sample<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
+export const findCheese = (guild: Guild, cheeseRole: string) =>
+    guild.members.find(m => m.roles.includes(cheeseRole));
+
 export class SaladBot extends Erisa {
     public db: Redite = new Redite({url: dbURL});
     public timer: NodeJS.Timer;
@@ -34,7 +37,7 @@ export class SaladBot extends Erisa {
 
             if (!channel) return;
 
-            const currentCheese = guild.members.find(m => m.roles.includes(cheeseRole));
+            const currentCheese = findCheese(guild, cheeseRole);
             const eligable = guild.members.filter(m => (currentCheese ? m.id !== currentCheese.id : true) && !m.bot && !!m.roles.length);
             const newCheese = sample(eligable);
 
@@ -46,8 +49,10 @@ export class SaladBot extends Erisa {
             if (currentCheese) await currentCheese.removeRole(cheeseRole, 'Cheese touch swap');
             await newCheese.addRole(cheeseRole, 'Cheese touch swap');
 
-            await channel.createMessage(`${newCheese.mention} has the cheese touch!`);
             await this.db[guild.id].lastCheeseSwap.set(Date.now());
+            await this.db[guild.id].canTransferCheese.set(true);
+
+            await channel.createMessage(`${newCheese.mention} has the cheese touch!`);
         }
     }
 

@@ -2,6 +2,7 @@ export interface ICheeseSettings {
     cheeseRole: string;
     cheeseChannel: string;
     lastCheeseSwap: number;
+    canTransferCheese: boolean;
 }
 
 export interface IHealthSettings {
