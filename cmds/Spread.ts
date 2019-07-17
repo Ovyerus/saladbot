@@ -31,7 +31,7 @@ export default class Spread extends Command {
 
         // TODO: can probably do just an equality check
         if (currentCheese.id !== ctx.member!.id)
-            return ctx.send('You need to be the current cheese touch to spread it!');
+            return ctx.send('Nice try, a-hole.');
         else if (!canTransferCheese)
             return ctx.send('You are unable to spread the cheese touch further!');
         else if (!possibleTouchee || !ctx.guild.members.get(possibleTouchee.id))
