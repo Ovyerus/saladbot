@@ -11,10 +11,7 @@ export default class NextSwap extends Command {
     }
 
     async main(ctx: GuildContext) {
-        if (!await this.bot.db.has(ctx.guild.id)) {
-            await ctx.send("This server hasn't been set up.");
-            return;
-        }
+        if (!await this.bot.db.has(ctx.guild.id)) return ctx.send("This server hasn't been set up.");
 
         const {
             cheeseChannel,
@@ -22,10 +19,7 @@ export default class NextSwap extends Command {
             lastCheeseSwap
         }: ICheeseSettings = await this.bot.db[ctx.guild.id];
 
-        if (!ctx.guild.channels.get(cheeseChannel) || !ctx.guild.roles.get(cheeseRole)) {
-            await ctx.send("This server hasn't been set up.");
-            return;
-        }
+        if (!ctx.guild.channels.get(cheeseChannel) || !ctx.guild.roles.get(cheeseRole)) return ctx.send("This server hasn't been set up.");
 
         const time = Date.now() - (lastCheeseSwap + INTERVAL);
 

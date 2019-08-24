@@ -43,10 +43,7 @@ export default class Setup extends Command {
             if (cheeseRole && cheeseChannel && healthChannel
                 && ctx.guild.roles.get(cheeseRole)
                 && ctx.guild.channels.get(cheeseChannel)
-                && ctx.guild.channels.get(healthChannel)) {
-                await ctx.send('Server already set up.');
-                return;
-            }
+                && ctx.guild.channels.get(healthChannel)) return ctx.send('Server already set up.');
         }
 
         if (!cheeseRole || !ctx.guild.roles.get(cheeseRole)) {

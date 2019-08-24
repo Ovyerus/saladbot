@@ -14,20 +14,14 @@ export default class ForceSwap extends Command {
     }
 
     async main(ctx: GuildContext) {
-        if (!await this.bot.db.has(ctx.guild.id)) {
-            await ctx.send("This server hasn't been set up.");
-            return;
-        }
+        if (!await this.bot.db.has(ctx.guild.id)) return ctx.send("This server hasn't been set up.");
 
         const {
             cheeseChannel,
             cheeseRole
         }: ICheeseSettings = await this.bot.db[ctx.guild.id];
 
-        if (!ctx.guild.channels.get(cheeseChannel) || !ctx.guild.roles.get(cheeseRole)) {
-            await ctx.send("This server hasn't been set up.");
-            return;
-        }
+        if (!ctx.guild.channels.get(cheeseChannel) || !ctx.guild.roles.get(cheeseRole)) return ctx.send("This server hasn't been set up.");
 
         await this.bot.doCheeseSwap(ctx.guild, true);
     }
