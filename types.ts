@@ -3,6 +3,7 @@ export interface ICheeseSettings {
     cheeseChannel: string;
     lastCheeseSwap: number;
     canTransferCheese: boolean;
+    aprilFools?: boolean;
 }
 
 export interface IHealthSettings {
