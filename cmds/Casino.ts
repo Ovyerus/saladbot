@@ -20,6 +20,12 @@ export default class Casino extends Command {
         const { aprilFools }: ICheeseSettings = await this.bot.db[ctx.guild.id];
 
         await this.bot.db[ctx.guild.id].aprilFools.set(!aprilFools);
-        await ctx.send("👍");
+        const { aprilFools: aprilFools2 }: ICheeseSettings = await this.bot.db[
+            ctx.guild.id
+        ];
+        console.log(aprilFools, aprilFools2);
+
+        if (aprilFools2) await ctx.send("👍 on");
+        else await ctx.send("👎 off");
     }
 }
