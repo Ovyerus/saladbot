@@ -1,23 +1,26 @@
 {
-  "name": "eri-tst",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "scripts": {
-    "dev": "ts-node index.ts",
-    "build": "tsc -p .",
-    "start": "cd dist && node index.js"
-  },
-  "dependencies": {
-    "@erisa/commands": "^0.0.4-4",
-    "@erisa/logger": "^0.0.3-0",
-    "erisa": "^0.0.4-0",
-    "redite": "^3.0.2"
-  },
-  "devDependencies": {
-    "@types/node": "^12.6.2",
-    "ts-node": "^8.3.0",
-    "tslint": "^5.18.0",
-    "typescript": "^3.8.3"
-  }
+    "name": "eri-tst",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "scripts": {
+        "dev": "ts-node index.ts",
+        "build": "tsc -p .",
+        "start": "cd dist && node index.js"
+    },
+    "dependencies": {
+        "@erisa/commands": "^0.0.4-4",
+        "@erisa/logger": "^0.0.3-0",
+        "erisa": "^0.0.4-0",
+        "mikro-orm": "^3.6.14",
+        "pg": "^8.2.1",
+        "redite": "^3.0.2"
+    },
+    "devDependencies": {
+        "@types/node": "^12.6.2",
+        "prettier": "^2.0.5",
+        "ts-node": "^8.3.0",
+        "tslint": "^5.18.0",
+        "typescript": "^3.8.3"
+    }
 }
