@@ -1,4 +1,5 @@
 import { Command, GuildContext } from "@erisa/commands";
+
 import { INTERVAL, SaladBot, TIMER_INTERVAL } from "..";
 import { ICheeseSettings } from "../types";
 
@@ -53,7 +54,7 @@ function timeFormat(ms: number) {
     time % 60, // seconds
   ].map((v) => {
     v = Math.floor(v);
-    return v > 10 ? "0" + v : v;
+    return v > 10 ? `0${v}` : v;
   });
 
   return all.join(":");

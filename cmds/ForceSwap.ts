@@ -1,4 +1,5 @@
 import { Command, GuildContext } from "@erisa/commands";
+
 import { SaladBot } from "..";
 import { ICheeseSettings } from "../types";
 

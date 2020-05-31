@@ -1,5 +1,6 @@
 import { Command, GuildContext } from "@erisa/commands";
 import { Constants, TextChannel } from "eris";
+
 import { SaladBot } from "..";
 
 const { Permissions } = Constants;
@@ -25,6 +26,7 @@ export default class Setup extends Command {
     self: ["manageRoles", "manageChannels", "sendMessages"],
     author: "manageGuild",
   };
+
   bot: SaladBot;
 
   constructor(bot: SaladBot) {

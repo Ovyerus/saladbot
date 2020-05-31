@@ -1,9 +1,11 @@
+import commands from "@erisa/commands";
+import logger from "@erisa/logger";
 import { Message, Guild, TextChannel } from "eris";
 import { Erisa } from "erisa";
-import logger from "@erisa/logger";
-import commands from "@erisa/commands";
 import { Redite } from "redite";
-import * as path from "path";
+
+import { resolve, sep } from "path";
+
 import { token, prefixes, owner, dbURL } from "./config.json";
 import { ICheeseSettings, IHealthSettings } from "./types";
 
@@ -19,9 +21,9 @@ export const findCheese = (guild: Guild, cheeseRole: string) =>
   guild.members.find((m) => m.roles.includes(cheeseRole));
 
 export class SaladBot extends Erisa {
-  public db: Redite = new Redite({ url: dbURL });
-  public timer: NodeJS.Timer;
-  public lastTimerRun: number;
+  db: Redite = new Redite({ url: dbURL });
+  timer: NodeJS.Timer;
+  lastTimerRun: number;
 
   async doCheeseSwap(guild: Guild, force?: boolean) {
     if (!(await this.db.has(guild.id))) return;
@@ -92,7 +94,7 @@ bot.use(logger(bot));
 bot.use(
   commands(bot, {
     autoLoad: true,
-    commandDirectory: path.resolve("./cmds/") + path.sep,
+    commandDirectory: resolve("./cmds/") + sep,
     owner,
     prefixes,
     debug: true,
@@ -123,7 +125,7 @@ bot.use("messageCreate", async (_, msg: Message) => {
   )
     return;
 
-  if (!msg.content.toLowerCase().includes("casino")) {
+  if (!msg.content.toLowerCase().includes("casino"))
     try {
       const dm = await msg.author.getDMChannel();
 
@@ -132,7 +134,6 @@ bot.use("messageCreate", async (_, msg: Message) => {
         "I think your message stinks so I deleted it. Try sending something nice about our lord Casino instead."
       );
     } catch {}
-  }
 });
 
 bot.use("error", () => {});

@@ -1,4 +1,5 @@
 import { Command, Context } from "@erisa/commands";
+
 import { SaladBot } from "..";
 
 export default class Eval extends Command {

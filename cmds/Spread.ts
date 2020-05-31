@@ -1,5 +1,6 @@
 import { Command, GuildContext } from "@erisa/commands";
 import { TextChannel } from "eris";
+
 import { findCheese, SaladBot } from "..";
 import { ICheeseSettings } from "../types";
 

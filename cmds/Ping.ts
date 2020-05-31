@@ -1,7 +1,7 @@
 import { Command, Context } from "@erisa/commands";
 
 export default class Ping extends Command {
-  overview: string = "Ping commands";
+  overview = "Ping commands";
 
   async main(ctx: Context) {
     const msg = await ctx.send("Pong");
