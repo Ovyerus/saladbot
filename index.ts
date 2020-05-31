@@ -120,7 +120,6 @@ bot.use("messageCreate", async (_, msg: Message) => {
   if (
     !(msg.channel instanceof TextChannel) ||
     !(await bot.db.has(msg.channel.guild.id)) ||
-    !(await bot.db[msg.channel.guild.id].aprilFools) ||
     msg.member?.permission.has("manageGuild")
   )
     return;
