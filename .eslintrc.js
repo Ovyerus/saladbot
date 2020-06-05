@@ -15,4 +15,9 @@ module.exports = {
       },
     },
   },
+  rules: {
+    "new-cap": "off",
+    "@typescript-eslint/no-invalid-this": "off",
+    "require-atomic-updates": "off",
+  },
 };

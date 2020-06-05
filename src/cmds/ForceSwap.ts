@@ -1,7 +1,6 @@
 import { Command, GuildContext } from "@erisa/commands";
 
-import { SaladBot } from "..";
-import { ICheeseSettings } from "../types";
+import { SaladBot } from "../saladbot";
 
 export default class ForceSwap extends Command {
   overview = "Forces a cheese touch swap.";
@@ -15,16 +14,13 @@ export default class ForceSwap extends Command {
   }
 
   async main(ctx: GuildContext) {
-    if (!(await this.bot.db.has(ctx.guild.id)))
-      return ctx.send("This server hasn't been set up.");
+    const guild = await this.bot.db.guilds.findOne(guild.id);
 
-    const { cheeseChannel, cheeseRole }: ICheeseSettings = await this.bot.db[
-      ctx.guild.id
-    ];
+    if (!guild) return ctx.send("This server hasn't been set up.");
 
     if (
-      !ctx.guild.channels.get(cheeseChannel) ||
-      !ctx.guild.roles.get(cheeseRole)
+      !ctx.guild.channels.get(guild.cheeseTouchChannel) ||
+      !ctx.guild.roles.get(guild.cheeseTouchRole)
     )
       return ctx.send("This server hasn't been set up.");
 

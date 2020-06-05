@@ -1,23 +1,23 @@
 import { Command, GuildContext } from "@erisa/commands";
-import { Constants, TextChannel } from "eris";
+import { Constants, TextChannel, Role } from "eris";
 
-import { SaladBot } from "..";
+import Guild from "../entities/guild";
+import { SaladBot } from "../saladbot";
 
 const { Permissions } = Constants;
 const CHEESE_EVERYONE_ALLOW = Permissions.readMessages;
 const CHEESE_EVERYONE_DENY = Permissions.sendMessages;
 const CHEESE_SELF_ALLOW = CHEESE_EVERYONE_DENY;
 const CHEESE_ROLE_ALLOW = Permissions.readMessages | Permissions.sendMessages;
-const CHEESE_ROLE_EVERYWHERE_DENY = Permissions.sendMessages;
 
 const HEALTH_SELF_ALLOW = CHEESE_ROLE_ALLOW;
 const HEALTH_EVERYONE_DENY = CHEESE_EVERYONE_DENY;
 
-interface IInitialSaladSettings {
-  cheeseRole?: string;
-  cheeseChannel?: string;
-  healthChannel?: string;
-}
+// interface IInitialSaladSettings {
+//   cheeseRole?: string;
+//   cheeseChannel?: string;
+//   healthChannel?: string;
+// }
 
 export default class Setup extends Command {
   overview = "Sets up special shit.";
@@ -37,31 +37,25 @@ export default class Setup extends Command {
 
   async main(ctx: GuildContext) {
     await ctx.send("Please wait...");
-    let {
-      cheeseRole,
-      cheeseChannel,
-      healthChannel,
-    }: IInitialSaladSettings = {};
+    // const guild = new Guild(ctx.guild.id);
+    const guild =
+      (await this.bot.db.guilds.findOne({
+        id: ctx.guild.id,
+      })) ?? new Guild(ctx.guild.id);
 
-    if (await this.bot.db.has(ctx.guild.id)) {
-      ({ cheeseRole, cheeseChannel, healthChannel } = await this.bot.db[
-        ctx.guild.id
-      ]);
+    if (
+      guild.cheeseTouchChannel &&
+      guild.cheeseTouchRole &&
+      guild.healthUpdateChannel &&
+      ctx.guild.roles.get(guild.cheeseTouchRole) &&
+      ctx.guild.channels.get(guild.cheeseTouchChannel) &&
+      ctx.guild.channels.get(guild.healthUpdateChannel)
+    )
+      return ctx.send("Server already set up.");
 
-      if (
-        cheeseRole &&
-        cheeseChannel &&
-        healthChannel &&
-        ctx.guild.roles.get(cheeseRole) &&
-        ctx.guild.channels.get(cheeseChannel) &&
-        ctx.guild.channels.get(healthChannel)
-      )
-        return ctx.send("Server already set up.");
-    }
-
-    if (!cheeseRole || !ctx.guild.roles.get(cheeseRole)) {
+    if (!guild.cheeseTouchRole || !ctx.guild.roles.get(guild.cheeseTouchRole)) {
       const msg = await ctx.send("Cheese touch role not found, creating...");
-      let role;
+      let role: Role;
 
       try {
         role = await ctx.guild.createRole(
@@ -73,18 +67,21 @@ export default class Setup extends Command {
         );
       } catch (err) {
         console.log(err);
-        await msg.edit(`Can't create role: ${err.message}`);
+        await msg.edit(`Can't create role: ${err.message as string}`);
         await ctx.send("Aborting setup. Failed to create cheese touch role.");
         return;
       }
 
-      cheeseRole = role.id;
+      guild.cheeseTouchRole = role.id;
       await msg.edit(
         `Successfully created ${role.mention}. Make sure to put this role high enough so that it can give people the colour.`
       );
     }
 
-    if (!cheeseChannel || !ctx.guild.channels.get(cheeseChannel)) {
+    if (
+      !guild.cheeseTouchChannel ||
+      !ctx.guild.channels.get(guild.cheeseTouchChannel)
+    ) {
       const msg = await ctx.send("Cheese touch channel not found, creating...");
       let channel: TextChannel;
 
@@ -96,7 +93,7 @@ export default class Setup extends Command {
         )) as TextChannel;
       } catch (err) {
         console.log(err);
-        await msg.edit(`Can't create channel: ${err.message}`);
+        await msg.edit(`Can't create channel: ${err.message as string}`);
         await ctx.send(
           "Aborting setup. Failed to create cheese touch channel."
         );
@@ -119,7 +116,7 @@ export default class Setup extends Command {
           "Setup: cheese touch channel permissions"
         );
         await channel.editPermission(
-          cheeseRole as string,
+          guild.cheeseTouchRole,
           CHEESE_ROLE_ALLOW,
           0,
           "role",
@@ -127,46 +124,25 @@ export default class Setup extends Command {
         );
       } catch (err) {
         console.log(err);
-        await msg.edit(`Can't setup channel permissions: ${err.message}`);
+        await msg.edit(
+          `Can't setup channel permissions: ${err.message as string}`
+        );
         await ctx.send(
           "Aborting setup. Failed to set permissions for channels."
         );
         return;
       }
 
-      try {
-        const channelsToPerm = ctx.guild.channels.filter(
-          (c) =>
-            c.id !== channel.id &&
-            c.permissionsOf(ctx.me.id).has("manageChannels")
-        );
-
-        for (const chan of channelsToPerm)
-          await chan.editPermission(
-            cheeseRole as string,
-            0,
-            CHEESE_ROLE_EVERYWHERE_DENY,
-            "role",
-            "Setup: cheese role permissions"
-          );
-      } catch (err) {
-        console.log(err);
-        await msg.edit(
-          `Can't set permissions for cheese touch role: ${err.message}`
-        );
-        await ctx.send(
-          "Aborting setup. Failed to set cheese touch role permissions for all channels."
-        );
-        return;
-      }
-
-      cheeseChannel = channel.id;
+      guild.cheeseTouchChannel = channel.id;
       await msg.edit(
         `Successfully created ${channel.mention} and set up required permissions.`
       );
     }
 
-    if (!healthChannel || !ctx.guild.channels.get(healthChannel)) {
+    if (
+      !guild.healthUpdateChannel ||
+      !ctx.guild.channels.get(guild.healthUpdateChannel)
+    ) {
       const msg = await ctx.send(
         "Health updates channel not found, creating..."
       );
@@ -180,7 +156,7 @@ export default class Setup extends Command {
         )) as TextChannel;
       } catch (err) {
         console.log(err);
-        await msg.edit(`Can't create channel: ${err.message}`);
+        await msg.edit(`Can't create channel: ${err.message as string}`);
         await ctx.send(
           "Aborting setup. Failed to create health updates channel."
         );
@@ -205,7 +181,9 @@ export default class Setup extends Command {
       } catch (err) {
         console.log(err);
         await msg.edit(
-          `Can't set permissions for health updates channel: ${err.message}`
+          `Can't set permissions for health updates channel: ${
+            err.message as string
+          }`
         );
         await ctx.send(
           "Aborting setup. Failed to set permissions for the health updates channel."
@@ -213,20 +191,13 @@ export default class Setup extends Command {
         return;
       }
 
-      healthChannel = channel.id;
+      guild.healthUpdateChannel = channel.id;
       await msg.edit(
         `Successfully created ${channel.mention} and set up required permissions.`
       );
     }
 
-    await this.bot.db[ctx.guild.id].set({
-      cheeseRole,
-      cheeseChannel,
-      healthChannel,
-      canTransferCheese: true,
-      lastCheeseSwap: 0,
-      lastHealthUpdate: 0,
-    });
+    await this.bot.db.orm.em.flush();
 
     await this.bot.doCheeseSwap(ctx.guild);
     await this.bot.doHealthUpdate(ctx.guild);

@@ -1,7 +1,7 @@
 import { Command, Context } from "@erisa/commands";
 import { Constants } from "eris";
 
-import { SaladBot } from "..";
+import { SaladBot } from "../saladbot";
 
 const { Permissions } = Constants;
 const INVITE_PERMISSIONS =
