@@ -12,6 +12,7 @@
   "dependencies": {
     "@erisa/commands": "^0.0.4-4",
     "@erisa/logger": "^0.0.3-0",
+    "@iarna/toml": "^2.2.5",
     "eris": "^0.13.1",
     "erisa": "^0.0.4-0",
     "mikro-orm": "^3.6.14",

@@ -4,18 +4,19 @@ import { Guild } from "eris";
 
 import { resolve, sep } from "path";
 
-import { token, prefixes, owner } from "./config.json";
+import getConfig from "./src/getConfig";
 import { SaladBot, TIMER_INTERVAL } from "./src/saladbot";
 
-const bot = new SaladBot(token);
+const config = getConfig("./config.toml");
+const bot = new SaladBot(config.token);
 
 bot.use(logger(bot));
 bot.use(
   commands(bot, {
     autoLoad: true,
-    commandDirectory: resolve("./cmds/") + sep,
-    owner,
-    prefixes,
+    commandDirectory: resolve("./src/cmds/") + sep,
+    owner: config.owner,
+    prefixes: config.prefixes,
     debug: true,
   })
 );
