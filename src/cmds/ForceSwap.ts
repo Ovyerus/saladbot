@@ -14,7 +14,7 @@ export default class ForceSwap extends Command {
   }
 
   async main(ctx: GuildContext) {
-    const guild = await this.bot.db.guilds.findOne(guild.id);
+    const guild = await this.bot.db.guilds.findOne(ctx.guild.id);
 
     if (!guild) return ctx.send("This server hasn't been set up.");
 

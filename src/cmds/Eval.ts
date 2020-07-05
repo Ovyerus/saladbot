@@ -1,6 +1,6 @@
 import { Command, Context } from "@erisa/commands";
 
-import { SaladBot } from "..";
+import { SaladBot } from "../saladbot";
 
 export default class Eval extends Command {
   overview = "Run l33t hackor codes.";
