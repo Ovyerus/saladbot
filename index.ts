@@ -43,4 +43,4 @@ bot.use("ready", () => {
 
 bot.use("error", () => {});
 
-bot.connect();
+bot.start();
