@@ -15,6 +15,15 @@ module.exports = {
       },
     },
   },
+  overrides: [
+    {
+      files: ["migrations/*"],
+      rules: {
+        "import/prefer-default-export": "off",
+        "require-await": "off",
+      },
+    },
+  ],
   rules: {
     "new-cap": "off",
     "@typescript-eslint/no-invalid-this": "off",
