@@ -22,7 +22,16 @@ defmodule Salad.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:ecto_sql, "~> 3.0"},
+      {:gun, "== 2.0.1", hex: :remedy_gun},
+      {
+        :nostrum,
+        git: "https://github.com/Kraigie/nostrum.git",
+        ref: "acc68b98d557564b5c1475576b42c4a67c4b8c99"
+      },
+      {:postgrex, ">= 0.15.13"},
+      {:tz, "~> 0.12.0"},
     ]
   end
 end
