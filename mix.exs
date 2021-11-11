@@ -28,7 +28,7 @@ defmodule Salad.MixProject do
       {
         :nostrum,
         git: "https://github.com/Kraigie/nostrum.git",
-        ref: "acc68b98d557564b5c1475576b42c4a67c4b8c99"
+        ref: "b4daaf30c0c1a4b246a3aaecfdbd96490c708484"
       },
       {:postgrex, ">= 0.15.13"},
       {:tz, "~> 0.12.0"},
