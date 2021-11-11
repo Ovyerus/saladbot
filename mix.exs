@@ -15,7 +15,7 @@ defmodule Salad.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Salad.Application, []}
+      mod: {Salad, []}
     ]
   end
 
@@ -31,7 +31,8 @@ defmodule Salad.MixProject do
         ref: "b4daaf30c0c1a4b246a3aaecfdbd96490c708484"
       },
       {:postgrex, ">= 0.15.13"},
-      {:tz, "~> 0.12.0"},
+      {:typed_struct, "~> 0.2.1"},
+      {:tz, "~> 0.12.0"}
     ]
   end
 end

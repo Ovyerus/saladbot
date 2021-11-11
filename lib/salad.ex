@@ -1,18 +1,17 @@
 defmodule Salad do
   @moduledoc """
-  Documentation for `Salad`.
+  The Saladbot application.
   """
 
-  @doc """
-  Hello world.
+  use Application
 
-  ## Examples
+  @impl true
+  def start(_type, _args) do
+    children = [
+      Salad.Repo,
+      Salad.Consumer
+    ]
 
-      iex> Salad.hello()
-      :world
-
-  """
-  def hello do
-    :world
+    Supervisor.start_link(children, strategy: :one_for_one, name: Salad)
   end
 end
