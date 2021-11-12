@@ -6,8 +6,10 @@ defmodule Salad.CommandSystem.Command do
       @behaviour Salad.CommandSystem.Command
 
       use Salad.Util.Constants
-      require CommandSystem.Structs.Command, as: Command
-      require CommandSystem.Structs.Option, as: Option
+      alias Salad.CommandSystem.Structs.{Command, Option}
+      alias Nostrum.Api
+      require Command.Type
+      require Option.Type
 
       # Default `name` to getting the name of the module, by splitting on dots
       # and downcasing the last part.

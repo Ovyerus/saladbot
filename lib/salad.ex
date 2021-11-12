@@ -12,6 +12,7 @@ defmodule Salad do
       Salad.Consumer
     ]
 
+    Salad.CommandSystem.setup()
     Supervisor.start_link(children, strategy: :one_for_one, name: Salad)
   end
 end

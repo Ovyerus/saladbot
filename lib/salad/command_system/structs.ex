@@ -6,6 +6,7 @@ defmodule Salad.CommandSystem.Structs do
 
   typedstruct module: Command do
     @type type :: ApplicationCommand.command_type()
+    @derive Jason.Encoder
 
     field :name, String.t(), enforce: true
     field :description, String.t(), enforce: true
@@ -24,6 +25,7 @@ defmodule Salad.CommandSystem.Structs do
 
   typedstruct module: Option do
     @type type :: ApplicationCommand.command_option_type()
+    @derive Jason.Encoder
 
     field :name, String.t(), enforce: true
     field :description, String.t(), enforce: true
