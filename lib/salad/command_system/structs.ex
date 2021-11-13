@@ -5,6 +5,10 @@ defmodule Salad.CommandSystem.Structs do
   alias Nostrum.Struct.ApplicationCommand
 
   typedstruct module: Command do
+    @moduledoc """
+    Internal struct used to gather information for a command to send to Discord.
+    """
+
     @type type :: ApplicationCommand.command_type()
     @derive Jason.Encoder
 
@@ -14,7 +18,10 @@ defmodule Salad.CommandSystem.Structs do
     field :options, list(Salad.CommandSystem.Structs.Option.t()), enforce: true
 
     defmodule Type do
-      @moduledoc false
+      @moduledoc """
+      Module containing the different types of commands available.
+      """
+
       defenum 1, [
         :slash,
         :user,
@@ -24,6 +31,10 @@ defmodule Salad.CommandSystem.Structs do
   end
 
   typedstruct module: Option do
+    @moduledoc """
+    A struct used to define an option for a command.
+    """
+
     @type type :: ApplicationCommand.command_option_type()
     @derive Jason.Encoder
 
@@ -37,7 +48,10 @@ defmodule Salad.CommandSystem.Structs do
     field :autocomplete, boolean(), default: false
 
     defmodule Type do
-      @moduledoc false
+      @moduledoc """
+      Module containing the different types of options available.
+      """
+
       defenum 1, [
         :subcommand,
         :subcommand_group,
