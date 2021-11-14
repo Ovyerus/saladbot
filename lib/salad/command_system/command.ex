@@ -2,6 +2,8 @@ defmodule Salad.CommandSystem.Command do
   alias Salad.CommandSystem.Structs
   alias Nostrum.Struct, as: NStruct
 
+  @type predicate() :: (term() -> boolean() | String.t())
+
   defmacro __using__(_) do
     quote do
       @behaviour Salad.CommandSystem.Command
@@ -24,9 +26,10 @@ defmodule Salad.CommandSystem.Command do
 
       def type, do: Command.Type.slash()
       def options, do: []
+      def predicates, do: []
       def autocomplete(_), do: []
 
-      defoverridable name: 0, type: 0, options: 0, autocomplete: 1
+      defoverridable name: 0, type: 0, options: 0, predicates: 0, autocomplete: 1
     end
   end
 
@@ -34,7 +37,8 @@ defmodule Salad.CommandSystem.Command do
   @callback description() :: String.t()
   @callback type() :: Structs.Command.type()
   @callback options() :: list(Structs.Option.t())
-  # predicates?
+  @callback predicates() :: [predicate()]
+  # TODO: need to figure Discord's permission stuff to restrict commands that way (still have them added as a predicate though)
 
   @callback run(_ :: Nostrum.Struct.Interaction.t()) :: any()
   @callback autocomplete(_ :: NStruct.Interaction.t()) ::

@@ -1,5 +1,6 @@
 defmodule Salad.CommandSystem do
   require Logger
+  use Bitwise
 
   alias Nostrum.Api
   alias Salad.CommandSystem.Command, as: CommandMod
@@ -27,25 +28,15 @@ defmodule Salad.CommandSystem do
   end
 
   @spec process_interaction(Nostrum.Struct.Interaction.t()) :: any()
-  def process_interaction(ev) do
-    %{
-      data: %{
-        name: name,
-        type: type
-      }
-    } = ev
-
+  def process_interaction(%{data: %{type: type}} = ev) do
     case type do
       InteractionTypes.command() ->
-        case :ets.lookup(@table, name) do
-          [{^name, {_, mod}}] -> mod.run(ev)
-          _ -> nil
-        end
+        process_command(ev)
 
       InteractionTypes.component() ->
-        # Need automatic HMAC adding/verifying for component events so that we
-        # can verify they aren't spoofed. Apparently you can spoof them by
-        # saying theyre on an ephemeral message and Discord will just accept it.
+        # TODO: Need automatic HMAC adding/verifying for component events so
+        # that we can verify they aren't spoofed. Apparently you can spoof them
+        # by saying theyre on an ephemeral message and Discord will just accept it.
         IO.inspect(ev, label: "component interaction")
         :todo
 
@@ -55,6 +46,46 @@ defmodule Salad.CommandSystem do
 
       InteractionTypes.ping() ->
         Api.create_interaction_response(ev, %{type: 1})
+    end
+  end
+
+  defp process_command(%{data: %{name: name}} = ev) do
+    with [{^name, {_, mod}}] <- :ets.lookup(@table, name),
+         true <-
+           Enum.reduce_while(mod.predicates(), true, fn pred, _ ->
+             # TODO: limit this struct down a bit so that predicates can't respond to them directly?
+             case pred.(ev) do
+               true -> {:cont, true}
+               x -> {:halt, x}
+             end
+           end) do
+      mod.run(ev)
+    else
+      false ->
+        Api.create_interaction_response(ev, %{
+          type: 4,
+          data: %{
+            content: "You are not allowed to use this command.",
+            flags: 1 <<< 6
+          }
+        })
+
+      x when is_binary(x) ->
+        Api.create_interaction_response(ev, %{
+          type: 4,
+          data: %{
+            embeds: [
+              %{
+                title: "You are not allowed to use this command.",
+                description: x
+              }
+            ],
+            flags: 1 <<< 6
+          }
+        })
+
+      _ ->
+        nil
     end
   end
 
