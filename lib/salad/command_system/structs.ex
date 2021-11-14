@@ -9,7 +9,7 @@ defmodule Salad.CommandSystem.Structs do
     Internal struct used to gather information for a command to send to Discord.
     """
 
-    @type type :: ApplicationCommand.command_type()
+    @type type() :: ApplicationCommand.command_type()
     @derive Jason.Encoder
 
     field :name, String.t(), enforce: true
@@ -35,7 +35,8 @@ defmodule Salad.CommandSystem.Structs do
     A struct used to define an option for a command.
     """
 
-    @type type :: ApplicationCommand.command_option_type()
+    @type type() :: ApplicationCommand.command_option_type()
+
     @derive Jason.Encoder
 
     field :name, String.t(), enforce: true

@@ -1,5 +1,6 @@
 defmodule Salad.CommandSystem.Command do
   alias Salad.CommandSystem.Structs
+  alias Nostrum.Struct, as: NStruct
 
   defmacro __using__(_) do
     quote do
@@ -23,8 +24,9 @@ defmodule Salad.CommandSystem.Command do
 
       def type, do: Command.Type.slash()
       def options, do: []
+      def autocomplete(_), do: []
 
-      defoverridable name: 0, type: 0, options: 0
+      defoverridable name: 0, type: 0, options: 0, autocomplete: 1
     end
   end
 
@@ -34,5 +36,7 @@ defmodule Salad.CommandSystem.Command do
   @callback options() :: list(Structs.Option.t())
   # predicates?
 
-  @callback run(_ :: any()) :: any()
+  @callback run(_ :: Nostrum.Struct.Interaction.t()) :: any()
+  @callback autocomplete(_ :: NStruct.Interaction.t()) ::
+              list(NStruct.ApplicationCommand.command_choice())
 end

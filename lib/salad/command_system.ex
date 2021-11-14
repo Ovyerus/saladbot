@@ -4,6 +4,7 @@ defmodule Salad.CommandSystem do
   alias Nostrum.Api
   alias Salad.CommandSystem.Command, as: CommandMod
   alias Salad.CommandSystem.Structs
+  require Salad.CommandSystem.InteractionTypes, as: InteractionTypes
 
   @table :commands
 
@@ -27,9 +28,33 @@ defmodule Salad.CommandSystem do
 
   @spec process_interaction(Nostrum.Struct.Interaction.t()) :: any()
   def process_interaction(ev) do
-    with name <- ev.data.name,
-         [{^name, {_, mod}}] <- :ets.lookup(@table, name) do
-      mod.run(ev)
+    %{
+      data: %{
+        name: name,
+        type: type
+      }
+    } = ev
+
+    case type do
+      InteractionTypes.command() ->
+        case :ets.lookup(@table, name) do
+          [{^name, {_, mod}}] -> mod.run(ev)
+          _ -> nil
+        end
+
+      InteractionTypes.component() ->
+        # Need automatic HMAC adding/verifying for component events so that we
+        # can verify they aren't spoofed. Apparently you can spoof them by
+        # saying theyre on an ephemeral message and Discord will just accept it.
+        IO.inspect(ev, label: "component interaction")
+        :todo
+
+      InteractionTypes.command_autocomplete() ->
+        IO.inspect(ev, label: "command autocomplete")
+        :todo
+
+      InteractionTypes.ping() ->
+        Api.create_interaction_response(ev, %{type: 1})
     end
   end
 
