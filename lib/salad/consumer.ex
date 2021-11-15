@@ -20,7 +20,6 @@ defmodule Salad.Consumer do
   # end
 
   def handle_event({:INTERACTION_CREATE, ev, _}) do
-    # TODO: handle buttons andt stuff
     CommandSystem.process_interaction(ev)
   end
 

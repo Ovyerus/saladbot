@@ -8,3 +8,6 @@ config :salad, Salad.Repo,
   username: System.get_env("SALAD_DB_USER", "salad"),
   password: System.get_env("SALAD_DB_PASS", "salad"),
   hostname: System.get_env("SALAD_DB_HOST", "localhost")
+
+config :salad,
+  owner: System.fetch_env!("SALAD_OWNER") |> String.to_integer()

@@ -13,7 +13,6 @@ defmodule Salad.CommandSystem.Predicates do
     end
   end
 
-  @spec permissions(maybe_improper_list, keyword) :: {:fn, [], [{:->, [], [...]}, ...]}
   defmacro permissions(perms, opts \\ []) when is_list(perms) do
     operation = Keyword.get(opts, :operation, :and)
 
@@ -55,6 +54,22 @@ defmodule Salad.CommandSystem.Predicates do
           )
         end
       end
+    end
+  end
+
+  defmacro users(users, opts \\ []) when is_list(users) do
+    message = Keyword.get(opts, :message, false)
+
+    quote do
+      fn %{user: %{id: id}} ->
+        id in unquote(users) or unquote(message)
+      end
+    end
+  end
+
+  defmacro owner_only(opts \\ []) do
+    quote do
+      users([Application.fetch_env!(:salad, :owner)], unquote(opts))
     end
   end
 end
