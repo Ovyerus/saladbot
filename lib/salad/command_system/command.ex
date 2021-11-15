@@ -1,5 +1,6 @@
 defmodule Salad.CommandSystem.Command do
-  alias Salad.CommandSystem.Structs
+  alias Salad.CommandSystem
+  alias CommandSystem.Structs
   alias Nostrum.Struct, as: NStruct
 
   @type predicate() :: (term() -> boolean() | String.t())
@@ -9,10 +10,11 @@ defmodule Salad.CommandSystem.Command do
       @behaviour Salad.CommandSystem.Command
 
       use Salad.Util.Constants
-      alias Salad.CommandSystem.Structs.{Command, Option}
+      alias CommandSystem.Structs.{Command, Option}
       alias Nostrum.Api
       require Command.Type
       require Option.Type
+      import CommandSystem.Predicates
 
       # Default `name` to getting the name of the module, by splitting on dots
       # and downcasing the last part.

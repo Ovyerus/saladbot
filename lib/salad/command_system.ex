@@ -28,7 +28,7 @@ defmodule Salad.CommandSystem do
   end
 
   @spec process_interaction(Nostrum.Struct.Interaction.t()) :: any()
-  def process_interaction(%{data: %{type: type}} = ev) do
+  def process_interaction(%{type: type} = ev) do
     case type do
       InteractionTypes.command() ->
         process_command(ev)
