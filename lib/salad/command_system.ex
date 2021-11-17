@@ -9,6 +9,21 @@ defmodule Salad.CommandSystem do
 
   @table :commands
 
+  @spec reply(Salad.CommandSystem.Structs.Context.t(), map) :: {:ok} | {:error, map()}
+  @doc """
+  Easily reply to a interaction with the command's context.
+
+  Just a simple wrapper around `Nostrum.Api.create_interaction_response/3`
+  to make it work easily with our custom context. A shorthand equivalent for
+  doing the following:
+
+      %{id: id, token: token} = ctx
+      Nostrum.Api.create_interaction_response(id, token, %{...})
+
+  """
+  def reply(%Structs.Context{} = ctx, response),
+    do: Api.create_interaction_response(ctx.id, ctx.token, response)
+
   def setup do
     init_table()
     load_commands()
@@ -59,7 +74,8 @@ defmodule Salad.CommandSystem do
                x -> {:halt, x}
              end
            end) do
-      mod.run(ev)
+      ctx = Structs.Context.from_interaction(ev)
+      mod.run(ctx)
     else
       false ->
         Api.create_interaction_response(ev, %{

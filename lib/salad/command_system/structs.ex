@@ -2,7 +2,8 @@ defmodule Salad.CommandSystem.Structs do
   @moduledoc false
   use TypedStruct
   use Salad.Util.Constants
-  alias Nostrum.Struct.ApplicationCommand
+  alias Nostrum.Struct, as: NStruct
+  alias NStruct.ApplicationCommand
 
   typedstruct module: Command do
     @moduledoc """
@@ -43,11 +44,12 @@ defmodule Salad.CommandSystem.Structs do
     field :description, String.t(), enforce: true
     field :type, ApplicationCommand.command_option_type(), enforce: true
     field :required, boolean(), default: false
-    field :choices, ApplicationCommand.command_choice(), default: []
+    field :choices, list(ApplicationCommand.command_choice()), default: []
     field :options, list(__MODULE__.t()), default: []
     field :channel_types, list(pos_integer()), default: []
     field :autocomplete, boolean(), default: false
 
+    # TODO: pass atoms as type instead of numbers from an enum
     defmodule Type do
       @moduledoc """
       Module containing the different types of options available.
@@ -65,6 +67,105 @@ defmodule Salad.CommandSystem.Structs do
         :mentionable,
         :number
       ]
+    end
+  end
+
+  typedstruct module: Context do
+    field :name, String.t(), enforce: true
+    field :options, %{atom() => ResolvedOption.t()}, default: %{}
+    field :guild_id, pos_integer()
+    field :channel_id, pos_integer()
+    field :member, NStruct.Guild.Member.t() | nil
+    field :message, NStruct.Message.t() | nil
+    field :user, NStruct.User.t() | nil
+    # Needed to respond to the interaction
+    field :id, pos_integer()
+    field :token, String.t()
+    # Interaction type (ping, ...) (remove?)
+    field :type, pos_integer()
+    # Slash command type (data.type usually).
+    field :source, pos_integer()
+
+    typedstruct module: ResolvedOption, enforce: true do
+      # TODO: look at when does `options` get brought up (subcommands?)
+      # Keep string repr of name in case
+      field :name, String.t()
+      # TODO: atoms here ala above
+      field :type, Salad.CommandSystem.Structs.Option.t()
+      field :raw, String.t() | integer()
+
+      field :value,
+            String.t()
+            | integer()
+            | boolean()
+            | float()
+            | NStruct.User.t()
+            | NStruct.Guild.Member.t()
+            | NStruct.Guild.Role.t()
+            | NStruct.Guild.Channel.t()
+    end
+
+    @spec from_interaction(NStruct.Interaction.t()) :: __MODULE__.t()
+    def from_interaction(%{data: data} = interaction) do
+      options =
+        data.options
+        |> Stream.map(fn opt -> opt |> Map.from_struct() |> Map.drop([:options, :focused]) end)
+        |> Stream.map(fn opt ->
+          case opt.type do
+            # TODO: figure out subcommand & subcommand_group whenever I need it
+            x when x in [3, 4, 5, 10] ->
+              struct(ResolvedOption, Map.merge(opt, %{raw: opt.value}))
+
+            6 ->
+              struct(
+                ResolvedOption,
+                Map.merge(opt, %{
+                  # TODO: users or members?
+                  value: data.resolved.users[opt.value],
+                  raw: opt.value
+                })
+              )
+
+            7 ->
+              struct(
+                ResolvedOption,
+                Map.merge(opt, %{
+                  value: data.resolved.channels[opt.value],
+                  raw: opt.value
+                })
+              )
+
+            8 ->
+              struct(
+                ResolvedOption,
+                Map.merge(opt, %{
+                  value: data.resolved.roles[opt.value],
+                  raw: opt.value
+                })
+              )
+
+            9 ->
+              # TODO (mentionables, presumably match first in any, need to investigate)
+              nil
+          end
+        end)
+        |> Stream.map(fn opt -> {opt.name, opt} end)
+        |> Enum.into(%{})
+
+      # Was complaining for some reason about %__MODULE__
+      struct(__MODULE__, %{
+        name: data.name,
+        options: options,
+        guild_id: interaction.guild_id,
+        channel_id: interaction.channel_id,
+        member: interaction.member,
+        message: interaction.message,
+        user: interaction.user,
+        id: interaction.id,
+        token: interaction.token,
+        type: interaction.type,
+        source: data.type
+      })
     end
   end
 end

@@ -1,4 +1,8 @@
 defmodule Salad.CommandSystem.Command do
+  @moduledoc """
+  Behaviour for specifying a module to be used as a command.
+  Also imports some aliases and useful macros to help reduce repetition.
+  """
   alias Salad.CommandSystem
   alias CommandSystem.Structs
   alias Nostrum.Struct, as: NStruct
@@ -10,11 +14,12 @@ defmodule Salad.CommandSystem.Command do
       @behaviour Salad.CommandSystem.Command
 
       use Salad.Util.Constants
-      alias CommandSystem.Structs.{Command, Option}
+      alias CommandSystem.Structs.{Command, Context, Option}
       alias Nostrum.Api
       require Command.Type
       require Option.Type
       import CommandSystem.Predicates
+      import CommandSystem, only: [reply: 2]
 
       # Default `name` to getting the name of the module, by splitting on dots
       # and downcasing the last part.
@@ -42,7 +47,7 @@ defmodule Salad.CommandSystem.Command do
   @callback predicates() :: [predicate()]
   # TODO: need to figure Discord's permission stuff to restrict commands that way (still have them added as a predicate though)
 
-  @callback run(_ :: Nostrum.Struct.Interaction.t()) :: any()
+  @callback run(_ :: Struct.Context.t()) :: any()
   @callback autocomplete(_ :: NStruct.Interaction.t()) ::
               list(NStruct.ApplicationCommand.command_choice())
 end
