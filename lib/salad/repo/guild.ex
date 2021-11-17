@@ -1,4 +1,5 @@
 defmodule Salad.Repo.Guild do
+  @moduledoc false
   use Ecto.Schema
 
   import Ecto.Query
@@ -13,7 +14,7 @@ defmodule Salad.Repo.Guild do
   @required ~w(id)a
   @primary_key {:id, :id, autogenerate: false}
 
-  schema "guild" do
+  schema "guilds" do
     has_many :role_groups, Repo.RoleGroup
     timestamps()
   end
@@ -29,5 +30,11 @@ defmodule Salad.Repo.Guild do
     |> where(id: ^id)
     |> preload(:role_groups)
     |> Repo.one()
+  end
+
+  def create(guild_id) do
+    %__MODULE__{}
+    |> changeset(%{id: guild_id})
+    |> Repo.insert()
   end
 end

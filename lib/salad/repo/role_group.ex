@@ -1,4 +1,5 @@
 defmodule Salad.Repo.RoleGroup do
+  @moduledoc false
   use Ecto.Schema
 
   import Ecto.Query
@@ -15,7 +16,7 @@ defmodule Salad.Repo.RoleGroup do
 
   @required ~w(id guild_id roles name)a
 
-  schema "role_group" do
+  schema "role_groups" do
     field :name, :string
     field :roles, {:array, :integer}
     belongs_to :guild, Repo.Guild, type: :integer
