@@ -108,7 +108,7 @@ defmodule Salad.CommandSystem.Structs do
     @spec from_interaction(NStruct.Interaction.t()) :: __MODULE__.t()
     def from_interaction(%{data: data} = interaction) do
       options =
-        data.options
+        (data.options || [])
         |> Stream.map(fn opt -> opt |> Map.from_struct() |> Map.drop([:options, :focused]) end)
         |> Stream.map(fn opt ->
           case opt.type do

@@ -122,6 +122,7 @@ defmodule Salad.CommandSystem do
       for mod <- modules do
         name = mod.name()
 
+        # TODO: validate name and description
         struct = %Structs.Command{
           name: name,
           description: mod.description(),
