@@ -3,15 +3,12 @@ defmodule Salad.Repo.Migrations.GroupSearch do
   use Ecto.Migration
 
   def change do
-    execute """
-    ALTER TABLE role_groups
-    ADD COLUMN search_vector tsvector
-    GENERATED ALWAYS AS (
-      to_tsvector('english', name || ' ' || coalesce(description, ''))
-    ) STORED
-    """,
-    "ALTER TABLE role_groups DROP COLUMN search_vector"
+    execute "CREATE EXTENSION pg_trgm", "DROP EXTENSION pg_trgm"
 
-    create index("role_groups", ["search_vector"], name: :role_groups_searchable_idx, using: "GIN")
+    execute "CREATE INDEX role_groups_name_index ON role_groups USING gin (name gin_trgm_ops)",
+      "DROP INDEX role_groups_name_index"
+
+    execute "CREATE INDEX role_groups_description_index ON role_groups USING gin (description gin_trgm_ops)",
+      "DROP INDEX role_groups_description_index"
   end
 end

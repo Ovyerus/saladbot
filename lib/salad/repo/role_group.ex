@@ -69,13 +69,16 @@ defmodule Salad.Repo.RoleGroup do
 
   def search_for_guild(guild_id, text, amount \\ nil) do
     # Sanitise non-word chars out, and do a partial match
-    text = String.replace(text, ~r/\W/u, "") <> ":*"
+    text = text |> String.replace(~r/\W/u, "") |> then(&"%#{&1}%")
 
     # TODO: replace with a service like Meilisearch if we need to scale, or need full partial matching
     __MODULE__
     |> where(guild_id: ^guild_id)
-    |> where(fragment("search_vector @@ to_tsquery('simple', ?)", ^text))
-    |> order_by(fragment("ts_rank(search_vector, to_tsquery('simple', ?)) DESC", ^text))
+    |> where(
+      [rg],
+      ilike(rg.name, ^text) or (not is_nil(rg.description) and ilike(rg.description, ^text))
+    )
+    |> order_by([rg], fragment("word_similarity(?, ?) DESC", rg.name, ^text))
     |> limit(^amount)
     |> Repo.all()
   end

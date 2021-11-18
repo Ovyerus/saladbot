@@ -9,8 +9,8 @@ defmodule Salad.Repo.Migrations.Init do
     end
 
     create table(:role_groups) do
-      add :name, :string, null: false
-      add :description, :string, null: true
+      add :name, :text, null: false
+      add :description, :text, null: true
       add :roles, {:array, :bigint}, default: []
       add :guild_id, references(:guilds)
 
