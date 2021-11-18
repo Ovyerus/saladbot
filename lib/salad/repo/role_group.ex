@@ -53,4 +53,30 @@ defmodule Salad.Repo.RoleGroup do
     |> preload(:guild)
     |> Repo.one()
   end
+
+  def get_for_guild(guild_id, amount \\ nil) do
+    __MODULE__
+    |> where(guild_id: ^guild_id)
+    |> limit(^amount)
+    |> Repo.all()
+  end
+
+  def get_by_name_and_guild(guild_id, name) do
+    __MODULE__
+    |> where(guild_id: ^guild_id, name: ^name)
+    |> Repo.one()
+  end
+
+  def search_for_guild(guild_id, text, amount \\ nil) do
+    # Sanitise non-word chars out, and do a partial match
+    text = String.replace(text, ~r/\W/u, "") <> ":*"
+
+    # TODO: replace with a service like Meilisearch if we need to scale, or need full partial matching
+    __MODULE__
+    |> where(guild_id: ^guild_id)
+    |> where(fragment("search_vector @@ to_tsquery('simple', ?)", ^text))
+    |> order_by(fragment("ts_rank(search_vector, to_tsquery('simple', ?)) DESC", ^text))
+    |> limit(^amount)
+    |> Repo.all()
+  end
 end

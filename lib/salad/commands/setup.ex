@@ -6,15 +6,18 @@ defmodule Salad.Commands.Setup do
   require Logger
   alias Salad.Repo
 
+  @impl true
   def description, do: "Initialise the server for using the bot"
 
+  @impl true
   def predicates,
     do: [
       guild_only(message: "This command can only be run in a server."),
       permissions([:manage_guild])
     ]
 
-  @spec run(Context.t()) :: any()
+  @impl true
+  @spec run(Salad.CommandSystem.Structs.Context.t()) :: any()
   def run(%{guild_id: guild_id} = ctx) do
     with nil <- Repo.Guild.get(guild_id),
          {:ok, _} <- Repo.Guild.create(guild_id) do

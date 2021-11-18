@@ -5,8 +5,10 @@ defmodule Salad.Commands.Create do
   require Logger
   alias Salad.Repo
 
+  @impl true
   def description, do: "Create a new role group for your server"
 
+  @impl true
   def predicates,
     do: [
       guild_only(),
@@ -14,6 +16,7 @@ defmodule Salad.Commands.Create do
       guild_setup()
     ]
 
+  @impl true
   def options,
     do: [
       %Option{
@@ -34,7 +37,7 @@ defmodule Salad.Commands.Create do
       }
     ]
 
-  @spec run(Context.t()) :: any()
+  @impl true
   def run(ctx) do
     %{"name" => %{value: name}} = ctx.options
     description = Map.get(ctx.options, "description", %{value: nil})
