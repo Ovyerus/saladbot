@@ -72,7 +72,8 @@ defmodule Salad.CommandSystem.Structs do
 
   typedstruct module: Context do
     field :name, String.t(), enforce: true
-    field :options, %{atom() => ResolvedOption.t()}, default: %{}
+    # TODO: make this a normal map => values, and add another map for the full structs
+    field :options, %{String.t() => ResolvedOption.t()}, default: %{}
     field :guild_id, pos_integer()
     field :channel_id, pos_integer()
     field :member, NStruct.Guild.Member.t() | nil
