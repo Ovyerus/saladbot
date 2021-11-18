@@ -29,11 +29,6 @@ defmodule Salad.Commands.Create do
         name: "description",
         type: Option.Type.string(),
         description: "The description for the group"
-      },
-      %Option{
-        name: "initial_role",
-        type: Option.Type.role(),
-        description: "The first role to add to the group"
       }
     ]
 
@@ -42,13 +37,7 @@ defmodule Salad.Commands.Create do
     %{"name" => %{value: name}} = ctx.options
     description = Map.get(ctx.options, "description", %{value: nil})
 
-    initial_role =
-      case Map.get(ctx.options, "initial_role") do
-        nil -> []
-        %{value: value} -> [value.id]
-      end
-
-    case Repo.RoleGroup.create(name, description.value, ctx.guild_id, initial_role) do
+    case Repo.RoleGroup.create(name, description.value, ctx.guild_id) do
       {:ok, group} ->
         reply(ctx, %{
           type: 4,

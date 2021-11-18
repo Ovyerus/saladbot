@@ -1,8 +1,9 @@
 defmodule Salad.Commands.Add do
   @moduledoc false
+  require Logger
   use Bitwise
   use Salad.CommandSystem.Command
-  alias Salad.Repo
+  alias Salad.{Repo, Util}
 
   @impl true
   def description, do: "Add a role to a role group"
@@ -30,6 +31,12 @@ defmodule Salad.Commands.Add do
         type: Option.Type.role(),
         description: "The role to add to the group",
         required: true
+      },
+      %Option{
+        name: "icon",
+        type: Option.Type.string(),
+        description: "The emoji to display when users apply the role",
+        required: true
       }
     ]
 
@@ -52,14 +59,85 @@ defmodule Salad.Commands.Add do
 
   @impl true
   def run(ctx) do
-    IO.inspect(ctx)
+    %{
+      "group" => %{value: group},
+      "icon" => %{value: icon},
+      "role" => %{value: role}
+    } = ctx.options
 
-    reply(ctx, %{
-      type: 4,
-      data: %{
-        content: "yoooo",
-        flags: 1 <<< 6
-      }
-    })
+    with role_group when role_group != nil <-
+           Repo.RoleGroup.get_by_name_and_guild(group, ctx.guild_id),
+         {:role_not_everyone, true} <- {:role_not_everyone, role.id != ctx.guild.id},
+         {:role_exists_already, false} <- {:role_exists_already, role.id in role_group.roles},
+         {:emote_icon, true} <- {:emote_icon, Util.emoji_or_custom_emote?(icon)},
+         {:accessible_icon, true} <-
+           {:accessible_icon, Util.accessible_emoji?(icon, ctx.guild_id)},
+         {:ok, _role_group} <- Repo.RoleGroup.add_role(role_group, role.id) do
+      reply(ctx, %{
+        type: 4,
+        data: %{
+          content: "Successfully added #{role} to the \"#{group}\" group.",
+          flags: 1 <<< 6
+        }
+      })
+    else
+      nil ->
+        reply(ctx, %{
+          type: 4,
+          data: %{
+            content: "A role group with that name does not exist.",
+            flags: 1 <<< 6
+          }
+        })
+
+      {:role_not_everyone, false} ->
+        reply(ctx, %{
+          type: 4,
+          data: %{
+            content: "The role you provided should not be the `@everyone` role.",
+            flags: 1 <<< 6,
+            allowed_mentions: %{parse: []}
+          }
+        })
+
+      {:role_exists_already, true} ->
+        reply(ctx, %{
+          type: 4,
+          data: %{
+            content: "That role is already a part of this group. Try picking another one.",
+            flags: 1 <<< 6
+          }
+        })
+
+      {:emote_icon, false} ->
+        reply(ctx, %{
+          type: 4,
+          data: %{
+            content: "The icon provided must be an emoji or custom emote.",
+            flags: 1 <<< 6
+          }
+        })
+
+      {:accessible_icon, false} ->
+        reply(ctx, %{
+          type: 4,
+          data: %{
+            content:
+              "The icon provided must be a default Discord emoji, or a custom emote from this server.",
+            flags: 1 <<< 6
+          }
+        })
+
+      {:error, %Ecto.Changeset{} = err} ->
+        Logger.error("Failed to update roles for role group `#{group}`: #{inspect(err)}")
+
+        reply(ctx, %{
+          type: 4,
+          data: %{
+            content: "Failed to update the role list for the group.",
+            flags: 1 <<< 6
+          }
+        })
+    end
   end
 end

@@ -9,7 +9,7 @@ defmodule Salad.CommandSystem do
 
   @table :commands
 
-  @spec reply(Salad.CommandSystem.Structs.Context.t(), map) :: {:ok} | {:error, map()}
+  @spec reply(Salad.CommandSystem.Structs.Context.t(), map()) :: {:ok} | {:error, map()}
   @doc """
   Easily reply to a interaction with the command's context.
 

@@ -47,6 +47,12 @@ defmodule Salad.Repo.RoleGroup do
     |> Repo.insert()
   end
 
+  def add_role(%__MODULE__{} = group, role_id) do
+    group
+    |> changeset(%{roles: [role_id | group.roles]})
+    |> Repo.update()
+  end
+
   def get(id) do
     __MODULE__
     |> where(id: ^id)

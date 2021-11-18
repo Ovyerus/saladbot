@@ -24,7 +24,9 @@ defmodule Salad.MixProject do
     [
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.0"},
+      {:emojix, "~> 0.3.1"},
       {:gun, "== 2.0.1", hex: :remedy_gun},
+      {:mint, "~> 1.4", override: true},
       {
         :nostrum,
         git: "https://github.com/Kraigie/nostrum.git",
