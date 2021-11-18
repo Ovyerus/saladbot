@@ -56,8 +56,7 @@ defmodule Salad.CommandSystem do
         :todo
 
       InteractionTypes.command_autocomplete() ->
-        IO.inspect(ev, label: "command autocomplete")
-        :todo
+        process_autocomplete(ev)
 
       InteractionTypes.ping() ->
         Api.create_interaction_response(ev, %{type: 1})
@@ -102,6 +101,27 @@ defmodule Salad.CommandSystem do
 
       _ ->
         nil
+    end
+  end
+
+  def process_autocomplete(%{data: %{name: name}} = ev) do
+    with [{^name, {_, mod}}] <- :ets.lookup(@table, name),
+         true <- {:autocomplete, 1} in mod.__info__(:functions) do
+      # TODO: custom autocomplete context?
+      # TODO: can we cancel in progress autocompletes if we detect new ones?
+      choices = mod.autocomplete(ev)
+
+      Api.create_interaction_response(ev, %{
+        type: 8,
+        data: %{choices: choices}
+      })
+    else
+      false ->
+        Logger.warn("No autocomplete function for command: #{name}")
+        :noop
+
+      _ ->
+        :noop
     end
   end
 

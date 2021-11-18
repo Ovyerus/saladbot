@@ -47,7 +47,7 @@ defmodule Salad.CommandSystem.Command do
   @callback predicates() :: [predicate()]
   # TODO: need to figure Discord's permission stuff to restrict commands that way (still have them added as a predicate though)
 
-  @callback run(_ :: Struct.Context.t()) :: any()
-  @callback autocomplete(_ :: NStruct.Interaction.t()) ::
+  @callback run(ctx :: Struct.Context.t()) :: any()
+  @callback autocomplete(ev :: NStruct.Interaction.t()) ::
               list(NStruct.ApplicationCommand.command_choice())
 end
