@@ -2,7 +2,7 @@ defmodule Salad.Repo.Role do
   @moduledoc false
   use Ecto.Schema
 
-  # import Ecto.Query
+  import Ecto.Query
   alias Salad.Repo
   import Ecto.Changeset
 
@@ -10,6 +10,8 @@ defmodule Salad.Repo.Role do
   @type group_id() :: pos_integer()
   @type icon() :: __MODULE__.Icon.t()
   @type raw_icon() :: __MODULE__.Icon.raw_t()
+
+  @typep repo_result :: {:ok, t()} | {:error, Ecto.Changeset.t()}
 
   @type t() :: %__MODULE__{
           id: id(),
@@ -58,7 +60,7 @@ defmodule Salad.Repo.Role do
     |> validate_required([:name])
   end
 
-  @spec create(id(), group_id(), raw_icon()) :: t()
+  @spec create(id(), group_id(), raw_icon()) :: repo_result()
   def create(id, group_id, icon) do
     params = %{
       id: id,
@@ -70,4 +72,20 @@ defmodule Salad.Repo.Role do
     |> changeset(params)
     |> Repo.insert()
   end
+
+  @spec delete(t()) :: repo_result()
+  def delete(%__MODULE__{} = role) do
+    Repo.delete(role)
+  end
+
+  # @spec delete(id(), group_id()) :: repo_result()
+  # def delete(id, group_id) do
+  #   __MODULE__
+  #   |> where(id: ^id, group_id: ^group_id)
+  #   |> Repo.one()
+  #   |> case do
+  #     nil -> {:ok, nil}
+  #     x -> Repo.delete(x)
+  #   end
+  # end
 end

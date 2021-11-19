@@ -43,7 +43,7 @@ defmodule Salad.Repo.RoleGroup do
     |> unique_constraint([:name, :guild_id], name: "role_groups_unique_name_per_guild")
   end
 
-  @spec create(name(), description(), guild_id()) :: t()
+  @spec create(name(), description(), guild_id()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
   def create(name, description, guild_id)
       when is_binary(name) and is_binary(description) and is_integer(guild_id) do
     params = %{

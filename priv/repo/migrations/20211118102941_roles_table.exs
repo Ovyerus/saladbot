@@ -29,13 +29,11 @@ defmodule Salad.Repo.Migrations.RolesTable do
     # Create a `roles` table containing role_id, icon (a JSON map), and a reference to the `role_groups` table called `group_id`.
     create table(:roles, primary_key: false) do
       add :id, :bigint, primary_key: true
-      add :group_id, references(:role_groups)
+      add :group_id, references(:role_groups), primary_key: true
       add :icon, :map
 
       timestamps()
     end
-
-    create index(:roles, [:id, :group_id], unique: true)
 
     alter table(:role_groups) do
       remove :roles

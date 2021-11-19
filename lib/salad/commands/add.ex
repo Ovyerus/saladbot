@@ -61,8 +61,8 @@ defmodule Salad.Commands.Add do
   def run(ctx) do
     %{
       "group" => %{value: group},
-      "icon" => %{value: icon},
-      "role" => %{value: role}
+      "role" => %{value: role},
+      "icon" => %{value: icon}
     } = ctx.options
 
     with role_group when role_group != nil <-
@@ -130,12 +130,12 @@ defmodule Salad.Commands.Add do
         })
 
       {:error, %Ecto.Changeset{} = err} ->
-        Logger.error("Failed to update roles for role group `#{group}`: #{inspect(err)}")
+        Logger.error("Failed to add role to group `#{group}`: #{inspect(err)}")
 
         reply(ctx, %{
           type: 4,
           data: %{
-            content: "Failed to update the role list for the group.",
+            content: "Failed to add the role to the group.",
             flags: 1 <<< 6
           }
         })
