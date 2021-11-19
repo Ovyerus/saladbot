@@ -13,6 +13,8 @@ defmodule Salad.Repo.RoleGroup do
   @type guild() :: Repo.Guild.t() | nil
   @type roles() :: list(Repo.Role.t()) | nil
 
+  @typep repo_result() :: {:ok, t()} | {:error, Ecto.Changeset.t()}
+
   @type t() :: %__MODULE__{
           id: id(),
           name: name(),
@@ -43,7 +45,7 @@ defmodule Salad.Repo.RoleGroup do
     |> unique_constraint([:name, :guild_id], name: "role_groups_unique_name_per_guild")
   end
 
-  @spec create(name(), description(), guild_id()) :: {:ok, t()} | {:error, Ecto.Changeset.t()}
+  @spec create(name(), description(), guild_id()) :: repo_result()
   def create(name, description, guild_id)
       when is_binary(name) and is_binary(description) and is_integer(guild_id) do
     params = %{
@@ -63,7 +65,7 @@ defmodule Salad.Repo.RoleGroup do
   #   |> Repo.update()
   # end
 
-  @spec get(id()) :: t()
+  @spec get(id()) :: t() | nil
   def get(id) when is_integer(id) do
     __MODULE__
     |> where(id: ^id)
@@ -80,7 +82,7 @@ defmodule Salad.Repo.RoleGroup do
     |> Repo.all()
   end
 
-  @spec get_by_name_and_guild(name(), guild_id()) :: t()
+  @spec get_by_name_and_guild(name(), guild_id()) :: t() | nil
   def get_by_name_and_guild(name, guild_id) when is_binary(name) when is_integer(guild_id) do
     __MODULE__
     |> where(guild_id: ^guild_id, name: ^name)

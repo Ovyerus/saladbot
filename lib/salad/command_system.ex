@@ -2,7 +2,7 @@ defmodule Salad.CommandSystem do
   require Logger
   use Bitwise
 
-  alias Nostrum.Api
+  alias Nostrum.{Api, Struct.Embed}
   alias Salad.CommandSystem.Command, as: CommandMod
   alias Salad.CommandSystem.Structs
   require Salad.CommandSystem.InteractionTypes, as: InteractionTypes
@@ -90,7 +90,7 @@ defmodule Salad.CommandSystem do
           type: 4,
           data: %{
             embeds: [
-              %{
+              %Embed{
                 title: "You are not allowed to use this command.",
                 description: x
               }

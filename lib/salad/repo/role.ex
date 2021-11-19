@@ -36,15 +36,18 @@ defmodule Salad.Repo.Role do
     embeds_one :icon, Icon, primary_key: false do
       @type t() :: %__MODULE__{
               id: String.t() | nil,
-              name: String.t()
+              name: String.t(),
+              animated: boolean()
             }
       @type raw_t() :: %{
               id: String.t() | nil,
-              name: String.t()
+              name: String.t(),
+              animated: boolean()
             }
 
       field :id, :string, default: nil
       field :name, :string
+      field :animated, :boolean, default: false
     end
   end
 

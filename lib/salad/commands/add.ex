@@ -72,8 +72,13 @@ defmodule Salad.Commands.Add do
          {:emote_icon, true} <- {:emote_icon, Util.emoji_or_custom_emote?(icon)},
          {:accessible_icon, true} <-
            {:accessible_icon, Util.accessible_emoji?(icon, ctx.guild_id)},
-         {icon_id, icon_name} <- Util.parse_emoji(icon),
-         {:ok, _} <- Repo.Role.create(role.id, role_group.id, %{id: icon_id, name: icon_name}) do
+         {icon_id, icon_name, icon_animated} <- Util.parse_emoji(icon),
+         {:ok, _} <-
+           Repo.Role.create(role.id, role_group.id, %{
+             id: icon_id,
+             name: icon_name,
+             animated: icon_animated
+           }) do
       reply(ctx, %{
         type: 4,
         data: %{
