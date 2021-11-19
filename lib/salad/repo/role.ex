@@ -1,0 +1,73 @@
+defmodule Salad.Repo.Role do
+  @moduledoc false
+  use Ecto.Schema
+
+  # import Ecto.Query
+  alias Salad.Repo
+  import Ecto.Changeset
+
+  @type id() :: pos_integer()
+  @type group_id() :: pos_integer()
+  @type icon() :: __MODULE__.Icon.t()
+  @type raw_icon() :: __MODULE__.Icon.raw_t()
+
+  @type t() :: %__MODULE__{
+          id: id(),
+          group_id: group_id(),
+          icon: icon()
+        }
+
+  @required ~w(id group_id)a
+  @icon_fields ~w(id name)a
+
+  @primary_key false
+  schema "roles" do
+    field :id, :integer, primary_key: true
+
+    belongs_to :role_group, Repo.RoleGroup,
+      type: :integer,
+      foreign_key: :group_id,
+      primary_key: true
+
+    timestamps()
+
+    embeds_one :icon, Icon, primary_key: false do
+      @type t() :: %__MODULE__{
+              id: String.t() | nil,
+              name: String.t()
+            }
+      @type raw_t() :: %{
+              id: String.t() | nil,
+              name: String.t()
+            }
+
+      field :id, :string, default: nil
+      field :name, :string
+    end
+  end
+
+  def changeset(role, params \\ %{}) do
+    role
+    |> cast(params, @required)
+    |> cast_embed(:icon, with: &icon_changeset/2)
+  end
+
+  defp icon_changeset(schema, params) do
+    schema
+    |> cast(params, @icon_fields)
+    |> validate_required([:name])
+  end
+
+  @spec create(id(), group_id(), raw_icon()) :: t()
+  def create(id, group_id, icon) do
+    params = %{
+      id: id,
+      group_id: group_id,
+      icon: icon
+    }
+
+    %__MODULE__{}
+    |> changeset(params)
+    |> Repo.insert()
+  end
+end

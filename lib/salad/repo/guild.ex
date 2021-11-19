@@ -6,9 +6,12 @@ defmodule Salad.Repo.Guild do
   alias Salad.Repo
   alias Ecto.Changeset
 
+  @type id() :: pos_integer()
+  @type role_groups() :: list(Repo.RoleGroup.t()) | nil
+
   @type t() :: %__MODULE__{
-          id: pos_integer(),
-          role_groups: list(Repo.RoleGroup.t())
+          id: id(),
+          role_groups: role_groups()
         }
 
   @required ~w(id)a
@@ -25,16 +28,18 @@ defmodule Salad.Repo.Guild do
     |> Changeset.validate_required(@required)
   end
 
-  def get(id) do
+  @spec get(id()) :: t()
+  def get(id) when is_integer(id) do
     __MODULE__
     |> where(id: ^id)
     |> preload(:role_groups)
     |> Repo.one()
   end
 
-  def create(guild_id) do
+  @spec create(id()) :: {:ok, t()} | {:error, Changeset.t()}
+  def create(id) when is_integer(id) do
     %__MODULE__{}
-    |> changeset(%{id: guild_id})
+    |> changeset(%{id: id})
     |> Repo.insert()
   end
 end

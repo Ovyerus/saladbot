@@ -67,12 +67,13 @@ defmodule Salad.Commands.Add do
 
     with role_group when role_group != nil <-
            Repo.RoleGroup.get_by_name_and_guild(group, ctx.guild_id),
-         {:role_not_everyone, true} <- {:role_not_everyone, role.id != ctx.guild.id},
-         {:role_exists_already, false} <- {:role_exists_already, role.id in role_group.roles},
+         {:role_not_everyone, true} <- {:role_not_everyone, role.id != ctx.guild_id},
+         nil <- Enum.find(role_group.roles, fn r -> r.id == role.id end),
          {:emote_icon, true} <- {:emote_icon, Util.emoji_or_custom_emote?(icon)},
          {:accessible_icon, true} <-
            {:accessible_icon, Util.accessible_emoji?(icon, ctx.guild_id)},
-         {:ok, _role_group} <- Repo.RoleGroup.add_role(role_group, role.id) do
+         {icon_id, icon_name} <- Util.parse_emoji(icon),
+         {:ok, _} <- Repo.Role.create(role.id, role_group.id, %{id: icon_id, name: icon_name}) do
       reply(ctx, %{
         type: 4,
         data: %{
@@ -100,7 +101,7 @@ defmodule Salad.Commands.Add do
           }
         })
 
-      {:role_exists_already, true} ->
+      %Repo.Role{} ->
         reply(ctx, %{
           type: 4,
           data: %{
