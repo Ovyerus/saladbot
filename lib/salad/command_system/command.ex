@@ -15,6 +15,7 @@ defmodule Salad.CommandSystem.Command do
 
       use Salad.Util.Constants
       alias CommandSystem.Structs.{Command, Context, Option}
+      alias CommandSystem.Structs.Components.ActionRow
       alias Nostrum.Api
       require Command.Type
       require Option.Type

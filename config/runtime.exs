@@ -10,4 +10,5 @@ config :salad, Salad.Repo,
   hostname: System.get_env("SALAD_DB_HOST", "localhost")
 
 config :salad,
-  owner: System.fetch_env!("SALAD_OWNER") |> String.to_integer()
+  owner: System.fetch_env!("SALAD_OWNER") |> String.to_integer(),
+  hmac_key: System.fetch_env!("SALAD_HMAC_KEY")

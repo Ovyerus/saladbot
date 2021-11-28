@@ -37,4 +37,12 @@ defmodule Salad.Util do
       end
     end
   end
+
+  @spec hmac(String.t()) :: String.t()
+  def hmac(data) when is_binary(data) do
+    key = Application.fetch_env!(:salad, :hmac_key)
+
+    :crypto.mac(:hmac, :sha256, key, data)
+    |> Base.encode64()
+  end
 end
