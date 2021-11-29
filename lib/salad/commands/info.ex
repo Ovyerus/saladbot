@@ -72,15 +72,6 @@ defmodule Salad.Command.Info do
                 description: role_group.description,
                 fields:
                   Enum.map(role_group.roles, fn role ->
-                    icon_string =
-                      case role.icon do
-                        %{id: nil, name: emoji} ->
-                          emoji
-
-                        %{animated: animated, id: id, name: name} ->
-                          "<#{if animated, do: "a"}:#{name}:#{id}>"
-                      end
-
                     role_name =
                       case guild.roles[role.id] do
                         nil -> "Unknown role"
@@ -90,7 +81,7 @@ defmodule Salad.Command.Info do
                     %Embed.Field{
                       # name: role.name,
                       name: role_name,
-                      value: "Assigned via #{icon_string}",
+                      value: "Assigned via #{role.icon}",
                       inline: true
                     }
                   end)

@@ -34,6 +34,8 @@ defmodule Salad.Repo.Role do
     timestamps()
 
     embeds_one :icon, Icon, primary_key: false do
+      @derive Jason.Encoder
+
       @type t() :: %__MODULE__{
               id: String.t() | nil,
               name: String.t(),
@@ -48,6 +50,13 @@ defmodule Salad.Repo.Role do
       field :id, :string, default: nil
       field :name, :string
       field :animated, :boolean, default: false
+
+      defimpl String.Chars, for: __MODULE__ do
+        def to_string(%{id: nil, name: emoji}), do: emoji
+
+        def to_string(%{animated: animated, id: id, name: name}),
+          do: "<#{if animated, do: "a"}:#{name}:#{id}>"
+      end
     end
   end
 

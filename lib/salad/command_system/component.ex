@@ -15,6 +15,7 @@ defmodule Salad.CommandSystem.Component do
 
     quote do
       @behaviour Salad.CommandSystem.Component
+      alias Nostrum.Api
 
       def name,
         do:
@@ -24,7 +25,6 @@ defmodule Salad.CommandSystem.Component do
           |> List.last()
           |> String.downcase()
 
-      @spec new(keyword()) :: Components.ActionRow.item()
       def new(opts) do
         {arg, opts} = Keyword.pop(opts, :arg, "")
 
@@ -39,12 +39,14 @@ defmodule Salad.CommandSystem.Component do
             :button ->
               quote do
                 {label, opts} = Keyword.pop(opts, :label)
+                {emoji, opts} = Keyword.pop(opts, :emoji)
                 {disabled, opts} = Keyword.pop(opts, :disabled, false)
                 {style, opts} = Keyword.pop(opts, :style, 1)
                 {url, opts} = Keyword.pop(opts, :url)
 
                 %Components.Button{
                   label: label,
+                  emoji: emoji,
                   custom_id: custom_id,
                   disabled: disabled,
                   style: style,
@@ -74,7 +76,7 @@ defmodule Salad.CommandSystem.Component do
   end
 
   @callback name() :: String.t()
-  @callback new(_ :: any()) :: Components.Button.t() | Components.SelectMenu.t()
+  @callback new(keyword()) :: Components.ActionRow.item()
 
   @callback run(ev :: Nostrum.Struct.Interaction.t(), arg :: String.t()) :: any()
 

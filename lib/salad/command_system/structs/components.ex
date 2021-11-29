@@ -3,6 +3,14 @@ defmodule Salad.CommandSystem.Structs.Components do
   use TypedStruct
   # alias Nostrum.Struct.ApplicationCommand
 
+  typedstruct module: PartialEmoji do
+    @derive Jason.Encoder
+
+    field :name, String.t(), enforce: true
+    field :id, String.t()
+    field :animated, boolean()
+  end
+
   typedstruct module: ActionRow do
     @type item :: Button.t() | SelectMenu.t()
     @derive Jason.Encoder
@@ -16,7 +24,8 @@ defmodule Salad.CommandSystem.Structs.Components do
 
     field :type, 2, default: 2
     field :custom_id, String.t(), enforce: true
-    field :label, String.t(), enforce: true
+    field :label, String.t()
+    field :emoji, PartialEmoji.t()
     field :disabled, boolean(), default: false
     field :style, pos_integer(), default: 1
     field :url, String.t()
@@ -36,10 +45,9 @@ defmodule Salad.CommandSystem.Structs.Components do
 
       field :label, String.t(), enforce: true
       field :value, String.t(), enforce: true
+      field :default, boolean()
       field :description, String.t()
-      # TODO: type the map
-      field :emoji, map()
-      field :default, boolean(), default: false
+      field :emoji, PartialEmoji.t()
     end
   end
 end
