@@ -67,11 +67,15 @@ defmodule Salad.Commands.Add do
 
     with role_group when role_group != nil <-
            Repo.RoleGroup.get_by_name_and_guild(group, ctx.guild_id),
-         {:role_not_everyone, true} <- {:role_not_everyone, role.id != ctx.guild_id},
+         # Discord provides max of 25 buttons per message (5 cols x 5 rows), so
+         # limit this so that we never go over that limit when syncing group
+         # messages. Still more than convential reaction based menus though (20).
+         true <- length(role_group.roles) < 25 || :limit_reached,
+         true <- role.id != ctx.guild_id || :role_everyone,
          nil <- Enum.find(role_group.roles, fn r -> r.id == role.id end),
-         {:emote_icon, true} <- {:emote_icon, Util.emoji_or_custom_emote?(icon)},
-         {:accessible_icon, true} <-
-           {:accessible_icon, Util.accessible_emoji?(icon, ctx.guild_id)},
+         true <- Util.emoji_or_custom_emote?(icon) || :icon_not_emoji,
+         true <-
+           Util.accessible_emoji?(icon, ctx.guild_id) || :icon_not_accessible,
          {icon_id, icon_name, icon_animated} <- Util.parse_emoji(icon),
          {:ok, _} <-
            Repo.Role.create(role.id, role_group.id, %{
@@ -96,7 +100,18 @@ defmodule Salad.Commands.Add do
           }
         })
 
-      {:role_not_everyone, false} ->
+      :limit_reached ->
+        reply(ctx, %{
+          type: 4,
+          data: %{
+            content:
+              "This role group has reached the limit of 25 roles and is now full. " <>
+                "Either remove some other roles, or crete a new group.",
+            flags: 1 <<< 6
+          }
+        })
+
+      :role_everyone ->
         reply(ctx, %{
           type: 4,
           data: %{
@@ -115,7 +130,7 @@ defmodule Salad.Commands.Add do
           }
         })
 
-      {:emote_icon, false} ->
+      :icon_not_emoji ->
         reply(ctx, %{
           type: 4,
           data: %{
@@ -124,7 +139,7 @@ defmodule Salad.Commands.Add do
           }
         })
 
-      {:accessible_icon, false} ->
+      :icon_not_accessible ->
         reply(ctx, %{
           type: 4,
           data: %{
