@@ -11,4 +11,5 @@ config :salad, Salad.Repo,
 
 config :salad,
   owner: System.fetch_env!("SALAD_OWNER") |> String.to_integer(),
-  hmac_key: System.fetch_env!("SALAD_HMAC_KEY")
+  hmac_key: System.fetch_env!("SALAD_HMAC_KEY"),
+  dev_guild: System.fetch_env!("SALAD_DEV_GUILD") |> String.to_integer()

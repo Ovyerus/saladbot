@@ -8,16 +8,13 @@ defmodule Salad.Consumer do
 
   def start_link, do: Consumer.start_link(__MODULE__)
 
-  def handle_event({:READY, %{guilds: guilds}, _}) do
-    Enum.each(guilds, fn guild ->
-      # Global commands soon probs
-      CommandSystem.register_commands_for_guild(guild.id)
-    end)
+  def handle_event({:READY, _, _}) do
+    if Mix.env() == :dev do
+      CommandSystem.register_commands_for_guild(Application.get_env(:salad, :dev_guild))
+    else
+      CommandSystem.register_commands_global()
+    end
   end
-
-  # def handle_event({:MESSAGE_CREATE, msg, _}) do
-  #   IO.inspect(msg)
-  # end
 
   def handle_event({:INTERACTION_CREATE, ev, _}) do
     CommandSystem.process_interaction(ev)

@@ -45,6 +45,14 @@ defmodule Salad.CommandSystem do
     |> then(&Api.bulk_overwrite_guild_application_commands(guild_id, &1))
   end
 
+  def register_commands_global() do
+    all_commands()
+    |> Enum.map(fn {_, {struct, _}} ->
+      struct
+    end)
+    |> then(&Api.bulk_overwrite_global_application_commands/1)
+  end
+
   @spec process_interaction(Nostrum.Struct.Interaction.t()) :: any()
   def process_interaction(%{type: type} = ev) do
     case type do
