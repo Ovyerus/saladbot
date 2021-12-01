@@ -31,10 +31,10 @@ defmodule Salad.Commands.Sync do
   @impl true
   def run(ctx) do
     %{
-      "channel" => %{value: channel}
+      "channel" => %{value: %{id: channel_id}}
     } = ctx.options
 
-    case Repo.RoleGroup.get_for_guild_with_messages_in_channel(ctx.guild_id, channel.id) do
+    case Repo.RoleGroup.get_for_guild_with_messages_in_channel(ctx.guild_id, channel_id) do
       [] ->
         reply(ctx, %{
           type: 4,
@@ -47,11 +47,27 @@ defmodule Salad.Commands.Sync do
       role_groups ->
         {:ok} = reply(ctx, %{type: 5, data: %{flags: 1 <<< 6}})
 
-        # TODO: delete messages from groups that are now empty
         nonempty_groups =
-          Enum.filter(role_groups, fn group ->
-            length(group.roles) > 0
+          Enum.filter(role_groups, fn
+            %{roles: []} -> false
+            _ -> true
           end)
+
+        empty_groups_with_messages =
+          Enum.filter(role_groups, fn
+            %{roles: [], messages: [_ | _]} -> true
+            _ -> false
+          end)
+
+        # Clean up any messages from a now empty group
+        for group <- empty_groups_with_messages do
+          for msg <- group.messages do
+            case Api.delete_message(msg.channel_id, msg.message_id) do
+              {:ok} -> Repo.RoleGroupMessage.delete(msg)
+              _ -> :noop
+            end
+          end
+        end
 
         for group <- nonempty_groups do
           # Action rows can only have 5 buttons each
@@ -78,7 +94,7 @@ defmodule Salad.Commands.Sync do
 
           case group.messages do
             [] ->
-              {:ok, msg} = Api.create_message(channel.id, args)
+              {:ok, msg} = Api.create_message(channel_id, args)
               Repo.RoleGroupMessage.create(msg.id, msg.channel_id, group.id)
 
             messages ->
@@ -102,7 +118,7 @@ defmodule Salad.Commands.Sync do
 
         Api.edit_interaction_response(ctx.token, %{
           content:
-            "Finished syncing messages for `#{finished}` groups in <##{channel.id}>, skipped over `#{diff}` empty groups."
+            "Finished syncing messages for `#{finished}` groups in <##{channel_id}>, skipped over `#{diff}` empty groups."
         })
     end
   end
