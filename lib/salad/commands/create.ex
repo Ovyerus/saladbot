@@ -42,7 +42,6 @@ defmodule Salad.Commands.Create do
         reply(ctx, %{
           type: 4,
           data: %{
-            # TODO: extra line when role provided
             content:
               "Successfully made group `#{group.name}`. You can now run `/add #{group.name}` to add some roles to the group.",
             flags: 1 <<< 6

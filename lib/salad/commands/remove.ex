@@ -62,7 +62,8 @@ defmodule Salad.Commands.Remove do
            Repo.RoleGroup.get_by_name_and_guild(group, ctx.guild_id),
          %Repo.Role{} = repo_role <-
            Enum.find(role_group.roles, :no_role, fn r -> r.id == role.id end),
-         {:ok, _} <- Repo.Role.delete(repo_role) do
+         {:ok, _} <- Repo.Role.delete(repo_role),
+         {:ok, _} <- Repo.RoleGroup.update(role_group) do
       reply(ctx, %{
         type: 4,
         data: %{

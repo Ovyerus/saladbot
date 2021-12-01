@@ -82,7 +82,8 @@ defmodule Salad.Commands.Add do
              id: icon_id,
              name: icon_name,
              animated: icon_animated
-           }) do
+           }),
+         {:ok, _} <- Repo.RoleGroup.update(role_group) do
       reply(ctx, %{
         type: 4,
         data: %{

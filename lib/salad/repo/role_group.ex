@@ -34,6 +34,7 @@ defmodule Salad.Repo.RoleGroup do
 
     belongs_to :guild, Repo.Guild, type: :integer
     has_many :roles, Repo.Role, foreign_key: :group_id
+    has_many :messages, Repo.RoleGroupMessage, foreign_key: :group_id
 
     timestamps()
   end
@@ -68,11 +69,21 @@ defmodule Salad.Repo.RoleGroup do
   end
 
   @spec get_for_guild(guild_id(), integer() | nil) :: list(t())
-  def get_for_guild(guild_id, amount \\ nil) when is_integer(guild_id) do
+  def get_for_guild(guild_id, amount \\ nil)
+      when is_integer(guild_id) and (is_nil(amount) or is_integer(amount)) do
     __MODULE__
     |> where(guild_id: ^guild_id)
     |> limit(^amount)
     |> preload(:roles)
+    |> Repo.all()
+  end
+
+  def get_for_guild_with_messages_in_channel(guild_id, channel_id)
+      when is_integer(guild_id) and is_integer(channel_id) do
+    __MODULE__
+    |> where(guild_id: ^guild_id)
+    |> join(:left, [rg], m in assoc(rg, :messages), on: m.channel_id == ^channel_id)
+    |> preload([_, m], [:roles, messages: m])
     |> Repo.all()
   end
 
@@ -101,5 +112,11 @@ defmodule Salad.Repo.RoleGroup do
     |> limit(^amount)
     |> preload(:roles)
     |> Repo.all()
+  end
+
+  def update(%__MODULE__{} = role_group) do
+    role_group
+    |> change(%{updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)})
+    |> Repo.update()
   end
 end

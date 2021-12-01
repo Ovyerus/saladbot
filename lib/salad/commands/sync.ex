@@ -34,7 +34,7 @@ defmodule Salad.Commands.Sync do
       "channel" => %{value: channel}
     } = ctx.options
 
-    case Repo.RoleGroup.get_for_guild(ctx.guild_id) do
+    case Repo.RoleGroup.get_for_guild_with_messages_in_channel(ctx.guild_id, channel.id) do
       [] ->
         reply(ctx, %{
           type: 4,
@@ -47,6 +47,7 @@ defmodule Salad.Commands.Sync do
       role_groups ->
         {:ok} = reply(ctx, %{type: 5, data: %{flags: 1 <<< 6}})
 
+        # TODO: delete messages from groups that are now empty
         nonempty_groups =
           Enum.filter(role_groups, fn group ->
             length(group.roles) > 0
@@ -65,18 +66,35 @@ defmodule Salad.Commands.Sync do
             |> Enum.map(fn role -> "#{role.icon} - <@&#{role.id}>" end)
             |> Enum.join("\n")
 
-          {:ok, _} =
-            Api.create_message(channel.id,
-              content: """
-              __**#{group.name}**__#{if group.description, do: "\n> #{group.description}"}
+          args = [
+            content: """
+            __**#{group.name}**__#{if group.description, do: "\n> #{group.description}"}
 
-              #{role_list}
-              """,
-              components: components,
-              allowed_mentions: :none
-            )
+            #{role_list}
+            """,
+            components: components,
+            allowed_mentions: :none
+          ]
 
-          # TODO: store in db so we can sync properly
+          case group.messages do
+            [] ->
+              {:ok, msg} = Api.create_message(channel.id, args)
+              Repo.RoleGroupMessage.create(msg.id, msg.channel_id, group.id)
+
+            messages ->
+              # TODO: pr to allow allowed_mentions on edit
+              {_, args} = Keyword.pop(args, :allowed_mentions)
+
+              messages
+              |> Enum.filter(fn msg ->
+                NaiveDateTime.compare(msg.updated_at, group.updated_at) == :lt
+              end)
+              |> Enum.each(fn m ->
+                # TODO: handle messages manually deleted, create new one
+                {:ok, _} = Api.edit_message(m.channel_id, m.message_id, args)
+                Repo.RoleGroupMessage.update(m)
+              end)
+          end
         end
 
         finished = length(nonempty_groups)
@@ -84,7 +102,7 @@ defmodule Salad.Commands.Sync do
 
         Api.edit_interaction_response(ctx.token, %{
           content:
-            "Finished sending messages for `#{finished}` groups, skipped over `#{diff}` empty groups."
+            "Finished syncing messages for `#{finished}` groups in <##{channel.id}>, skipped over `#{diff}` empty groups."
         })
     end
   end
