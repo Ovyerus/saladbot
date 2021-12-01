@@ -62,10 +62,8 @@ defmodule Salad.Commands.Sync do
         # Clean up any messages from a now empty group
         for group <- empty_groups_with_messages do
           for msg <- group.messages do
-            case Api.delete_message(msg.channel_id, msg.message_id) do
-              {:ok} -> Repo.RoleGroupMessage.delete(msg)
-              _ -> :noop
-            end
+            Api.delete_message(msg.channel_id, msg.message_id)
+            Repo.RoleGroupMessage.delete(msg)
           end
         end
 
@@ -99,16 +97,22 @@ defmodule Salad.Commands.Sync do
 
             messages ->
               # TODO: pr to allow allowed_mentions on edit
-              {_, args} = Keyword.pop(args, :allowed_mentions)
+              {_, no_mentions_args} = Keyword.pop(args, :allowed_mentions)
 
               messages
               |> Enum.filter(fn msg ->
                 NaiveDateTime.compare(msg.updated_at, group.updated_at) == :lt
               end)
               |> Enum.each(fn m ->
-                # TODO: handle messages manually deleted, create new one
-                {:ok, _} = Api.edit_message(m.channel_id, m.message_id, args)
-                Repo.RoleGroupMessage.update(m)
+                case Api.edit_message(m.channel_id, m.message_id, no_mentions_args) do
+                  {:ok, _} ->
+                    Repo.RoleGroupMessage.update(m)
+
+                  {:error, %{response: %{code: 10008}}} ->
+                    {:ok, msg} = Api.create_message(channel_id, args)
+                    Repo.RoleGroupMessage.delete(m)
+                    Repo.RoleGroupMessage.create(msg.id, msg.channel_id, group.id)
+                end
               end)
           end
         end
