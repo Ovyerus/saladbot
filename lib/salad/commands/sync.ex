@@ -30,6 +30,7 @@ defmodule Salad.Commands.Sync do
 
   @impl true
   def run(ctx) do
+    # TODO: unsync
     %{
       "channel" => %{value: %{id: channel_id}}
     } = ctx.options

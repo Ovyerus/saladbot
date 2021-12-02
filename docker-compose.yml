@@ -1,0 +1,21 @@
+version: "3"
+services:
+  salad:
+    build: "."
+    depends_on:
+      - "salad_psql"
+    env_file: ".env"
+    environment:
+      SALAD_DB_HOST: "salad_psql"
+  salad_psql:
+    image: "postgres:14-alpine"
+    env_file: ".env"
+    environment:
+      POSTGRES_PASSWORD: "${SALAD_DB_PASS}"
+      POSTGRES_USER: "${SALAD_DB_USER}"
+      POSTGRES_DB: "${SALAD_DB_NAME}"
+    volumes:
+      - "salad_psql:/var/lib/postgresql/data"
+
+volumes:
+  salad_psql:
