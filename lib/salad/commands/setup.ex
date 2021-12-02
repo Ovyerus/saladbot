@@ -29,8 +29,8 @@ defmodule Salad.Commands.Setup do
         }
       })
     else
-      {:error, e} ->
-        Logger.error(e)
+      {:error, err} ->
+        Logger.error("Failed to set up guild #{guild_id}: #{inspect(err)}")
 
         reply(ctx, %{
           type: 4,

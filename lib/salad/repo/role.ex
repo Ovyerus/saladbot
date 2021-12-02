@@ -2,7 +2,7 @@ defmodule Salad.Repo.Role do
   @moduledoc false
   use Ecto.Schema
 
-  import Ecto.Query
+  # import Ecto.Query
   alias Salad.Repo
   import Ecto.Changeset
 

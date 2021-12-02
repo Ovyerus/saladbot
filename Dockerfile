@@ -14,7 +14,7 @@ RUN mix deps.get
 RUN mix compile
 
 COPY . .
-# RUN mix sentry_recompile
+RUN mix sentry_recompile
 RUN mix release
 
 ENTRYPOINT ["dumb-init", "--"]

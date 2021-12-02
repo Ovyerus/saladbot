@@ -22,7 +22,8 @@ defmodule Salad.Components.Role do
           })
 
         err ->
-          Logger.error(inspect(err))
+          # TODO: handle position issues
+          Logger.error("Failed to remove role #{role} for #{ev.guild_id}: #{inspect(err)}")
 
           Api.create_interaction_response(ev, %{
             type: 4,
@@ -42,7 +43,7 @@ defmodule Salad.Components.Role do
           })
 
         err ->
-          Logger.error(inspect(err))
+          Logger.error("Failed to add role #{role} for #{ev.guild_id}: #{inspect(err)}")
 
           Api.create_interaction_response(ev, %{
             type: 4,

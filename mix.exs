@@ -7,7 +7,8 @@ defmodule Salad.MixProject do
       version: "0.1.0",
       elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
@@ -26,15 +27,24 @@ defmodule Salad.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:emojix, "~> 0.3.1"},
       {:gun, "== 2.0.1", hex: :remedy_gun},
+      {:hackney, "~> 1.8"},
+      {:jason, "~> 1.1"},
       {:mint, "~> 1.4", override: true},
       {
         :nostrum,
         git: "https://github.com/Kraigie/nostrum.git",
         ref: "7f43dc7785aa8f694cc229c1e511e1c7f798fe89"
       },
+      {:sentry, "8.0.0"},
       {:postgrex, ">= 0.15.13"},
       {:typed_struct, "~> 0.2.1"},
       {:tz, "~> 0.12.0"}
+    ]
+  end
+
+  defp aliases do
+    [
+      sentry_recompile: ["compile", "deps.compile sentry --force"]
     ]
   end
 end
