@@ -1,0 +1,7 @@
+_build
+.elixir_ls
+.vscode
+deps
+.env
+.env.example
+.dockerignore

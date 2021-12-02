@@ -23,3 +23,6 @@ config :sentry,
 config :logger, :console,
   format: "[$level] $message $metadata\n",
   metadata: [:guild_id, :interaction_id, :message_id, :user_id]
+
+config :salad,
+  sync_dev_guild: Mix.env() == :dev
