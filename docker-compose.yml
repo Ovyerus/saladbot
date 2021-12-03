@@ -3,19 +3,23 @@ services:
   salad:
     build: "."
     depends_on:
-      - "salad_psql"
+      salad_psql:
+        condition: service_healthy
+    restart: "unless-stopped"
     env_file: ".env"
     environment:
       SALAD_DB_HOST: "salad_psql"
   salad_psql:
-    image: "postgres:14-alpine"
+    image: "postgres:13-alpine"
+    restart: "unless-stopped"
     env_file: ".env"
-    environment:
-      POSTGRES_PASSWORD: "${SALAD_DB_PASS}"
-      POSTGRES_USER: "${SALAD_DB_USER}"
-      POSTGRES_DB: "${SALAD_DB_NAME}"
     volumes:
       - "salad_psql:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: "5s"
+      timeout: "5s"
+      retries: 5
 
 volumes:
   salad_psql:
