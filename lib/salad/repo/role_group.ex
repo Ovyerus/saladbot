@@ -48,7 +48,8 @@ defmodule Salad.Repo.RoleGroup do
 
   @spec create(name(), description(), guild_id()) :: repo_result()
   def create(name, description, guild_id)
-      when is_binary(name) and is_binary(description) and is_integer(guild_id) do
+      when is_binary(name) and (is_binary(description) or is_nil(description)) and
+             is_integer(guild_id) do
     params = %{
       name: name,
       description: description,
