@@ -32,8 +32,8 @@ defmodule Salad.MixProject do
       {:mint, "~> 1.4", override: true},
       {
         :nostrum,
-        git: "https://github.com/Kraigie/nostrum.git",
-        ref: "7f43dc7785aa8f694cc229c1e511e1c7f798fe89"
+        git: "https://github.com/Ovyerus/nostrum.git",
+        ref: "deca1186a6e601289f81e7749e07cbbaaed829fe"
       },
       {:sentry, "8.0.0"},
       {:postgrex, ">= 0.15.13"},
