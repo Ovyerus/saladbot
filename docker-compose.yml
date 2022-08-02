@@ -1,7 +1,7 @@
 version: "3"
 services:
   salad:
-    build: "."
+    image: "ghcr.io/ovyerus/saladbot"
     depends_on:
       salad_psql:
         condition: service_healthy
