@@ -1,4 +1,4 @@
-FROM elixir:1.15-alpine
+FROM elixir:1.14-alpine
 
 RUN mkdir /build
 WORKDIR /build
