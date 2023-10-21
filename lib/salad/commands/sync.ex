@@ -3,7 +3,7 @@ defmodule Salad.Commands.Sync do
   use Bitwise
   use Salad.CommandSystem.Command
   alias Nostrum.Struct.Guild.Member
-  alias Nostrum.Cache.{Me, GuildCache}
+  alias Nostrum.Cache.{Me, GuildCache, MemberCache}
   alias Salad.Components.Role, as: RoleButton
   alias Salad.Repo
 
@@ -38,7 +38,8 @@ defmodule Salad.Commands.Sync do
     } = ctx.options
 
     guild = GuildCache.get!(ctx.guild_id)
-    me = guild.members[Me.get().id]
+    {:ok, me} = MemberCache.get(guild.id, Me.get().id)
+    # me = guild.members[Me.get().id]
     perms = Member.guild_channel_permissions(me, guild, channel_id)
 
     cond do

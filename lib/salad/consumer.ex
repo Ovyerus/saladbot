@@ -7,7 +7,7 @@ defmodule Salad.Consumer do
   require Logger
   alias Salad.CommandSystem
 
-  def start_link, do: Consumer.start_link(__MODULE__)
+  # def start_link, do: Consumer.start_link(__MODULE__)
 
   def handle_event({:READY, _, _}) do
     if Application.get_env(:salad, :sync_dev_guild) do

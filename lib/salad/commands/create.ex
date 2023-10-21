@@ -61,7 +61,7 @@ defmodule Salad.Commands.Create do
         Logger.error("Failed to create role group: #{inspect(err)}",
           guild_id: ctx.guild_id,
           interaction_id: ctx.id,
-          user_id: ctx.member.user.id
+          user_id: ctx.user.id
         )
 
         reply(ctx, %{
