@@ -27,3 +27,5 @@ salad-*.tar
 
 .env
 .elixir_ls
+.envrc
+.direnv
