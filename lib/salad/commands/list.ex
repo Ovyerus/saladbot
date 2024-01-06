@@ -1,6 +1,5 @@
 defmodule Salad.Commands.List do
   @moduledoc false
-  use Bitwise
   use Salad.CommandSystem.Command
   alias Nostrum.Struct.Embed
   alias Salad.Repo

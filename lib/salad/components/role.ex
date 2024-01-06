@@ -1,7 +1,7 @@
 defmodule Salad.Components.Role do
   @moduledoc false
   use Salad.CommandSystem.Component, type: :button
-  use Bitwise
+  import Bitwise
   require Logger
 
   def run(ev, role) do

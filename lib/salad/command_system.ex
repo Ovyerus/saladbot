@@ -1,6 +1,6 @@
 defmodule Salad.CommandSystem do
   require Logger
-  use Bitwise
+  import Bitwise
 
   alias Nostrum.{Api, Struct.Embed}
   alias Salad.CommandSystem.Command, as: CommandMod
@@ -124,7 +124,7 @@ defmodule Salad.CommandSystem do
       })
     else
       false ->
-        Logger.warn("No autocomplete function for command: #{name}")
+        Logger.warning("No autocomplete function for command: #{name}")
         :noop
 
       _ ->

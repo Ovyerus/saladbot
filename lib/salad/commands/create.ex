@@ -1,6 +1,6 @@
 defmodule Salad.Commands.Create do
   @moduledoc false
-  use Bitwise
+  import Bitwise
   use Salad.CommandSystem.Command
   require Logger
   alias Salad.Repo

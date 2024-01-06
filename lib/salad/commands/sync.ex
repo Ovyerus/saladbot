@@ -1,6 +1,6 @@
 defmodule Salad.Commands.Sync do
   @moduledoc false
-  use Bitwise
+  import Bitwise
   use Salad.CommandSystem.Command
   alias Nostrum.Struct.Guild.Member
   alias Nostrum.Cache.{Me, GuildCache, MemberCache}

@@ -2,7 +2,6 @@ defmodule Salad.CommandSystem.Predicates do
   @moduledoc """
   Module containing macros for easily generating commonly used predicates for the command system.
   """
-  use Bitwise
   alias Nostrum.Struct.Guild.Member
 
   @doc """
