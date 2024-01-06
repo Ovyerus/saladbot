@@ -15,7 +15,7 @@ defmodule Salad.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :runtime_tools, :observer_cli],
       mod: {Salad, []}
     ]
   end
@@ -30,11 +30,14 @@ defmodule Salad.MixProject do
       {:jason, "~> 1.1"},
       {:mint, "~> 1.4", override: true},
       # {:nostrum, "~> 0.8"},
-      {:nostrum, git: "https://github.com/Kraigie/nostrum.git", ref: "1ec397fda41d4dd345aaeba471b88c8ccded920f"},
+      {:nostrum,
+       git: "https://github.com/Kraigie/nostrum.git",
+       ref: "d2daf4941927bc4452a4e79acbef4a574ce32f57"},
       {:sentry, "8.0.0"},
       {:postgrex, ">= 0.15.13"},
       {:typed_struct, "~> 0.2.1"},
-      {:tz, "~> 0.12.0"}
+      {:tz, "~> 0.12.0"},
+      {:observer_cli, "~> 1.7"}
     ]
   end
 
