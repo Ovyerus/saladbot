@@ -35,4 +35,5 @@ jobs:
       - name: Push Docker image
         run: |
           docker load < result
+          docker tag salad ghcr.io/ovyerus/saladbot:${{ steps.tag.outputs.tag }}
           docker push ghcr.io/ovyerus/saladbot:${{ steps.tag.outputs.tag }}
