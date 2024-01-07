@@ -54,7 +54,7 @@
               copyToRoot = [release pkgsStatic.busybox];
               config = {
                 Cmd = ["${release}/bin/salad" "start"];
-                Entrypoint = ["${pkgsStatic.dumb-init}/bin/dumb-init" "--"];
+                Entrypoint = ["${dumb-init}/bin/dumb-init" "--"];
               };
             })
           else runCommand pname {} "echo 'Docker image is not available to be built on darwin systems. Use a linux remote builder instead.'; exit 1";
