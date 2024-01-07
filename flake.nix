@@ -14,10 +14,12 @@
         pkgs = import nixpkgs {inherit system;};
         # Don't include anything extra like systemd & wxwidgets
         beam' = pkgs.beam_minimal.packages.erlang_26;
+        fs = pkgs.lib.fileset;
 
         elixir = beam'.elixir_1_16;
         erlang = beam'.erlang;
 
+        mixFiles = [./mix.exs ./mix.lock];
         nativeBuildInputs = with pkgs;
           []
           ++ (lib.optional stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
@@ -27,18 +29,24 @@
         # Build release
         pname = "salad";
         version = "0.1.0";
-        # TODO: only include app code somehow, otherwise it will change on any non-important change.
-        src = ./.;
 
         mixFodDeps = beam'.fetchMixDeps {
-          inherit src version elixir erlang;
+          inherit version elixir erlang;
           pname = "mix-deps-${pname}";
+          src = fs.toSource {
+            root = ./.;
+            fileset = fs.unions mixFiles;
+          };
           hash = "sha256-B3kBc/gpZTIxoOF+Bx9OkO6H4huwFBg+a4T1KGU4wDk=";
         };
 
         release = beam'.mixRelease {
-          inherit pname version src elixir erlang mixFodDeps nativeBuildInputs;
+          inherit pname version elixir erlang mixFodDeps nativeBuildInputs;
 
+          # TODO: figure out how to include only the app code so that only
+          # relevant changes are caught (fs.toSource/unions doesn't work for
+          # some reason)
+          src = ./.;
           # When running multi-node deploys, set `RELEASE_COOKIE` to override this.
           removeCookie = false;
         };
