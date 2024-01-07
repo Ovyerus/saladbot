@@ -37,7 +37,7 @@
             root = ./.;
             fileset = fs.unions mixFiles;
           };
-          hash = "sha256-B3kBc/gpZTIxoOF+Bx9OkO6H4huwFBg+a4T1KGU4wDk=";
+          hash = "sha256-DKnR2V5L76waN+EUDGvIOsgTechr67KAtrWt+CDRpxc";
         };
 
         release = beam'.mixRelease {
