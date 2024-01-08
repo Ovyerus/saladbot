@@ -63,6 +63,9 @@
               config = {
                 Cmd = ["${release}/bin/salad" "start"];
                 Entrypoint = ["${dumb-init}/bin/dumb-init" "--"];
+                # Some random containerd change set OPEN_MAX to infinity, which
+                # causes BEAM to inhale RAM like it's Kirby.
+                Env = ["ERL_MAX_PORTS=1024"];
               };
             })
           else runCommand pname {} "echo 'Docker image is not available to be built on darwin systems. Use a linux remote builder instead.'; exit 1";
