@@ -1,4 +1,4 @@
-defmodule Salad.Commands.Remove do
+defmodule Salad.Commands.Delete do
   @moduledoc false
   require Logger
   import Bitwise
@@ -6,7 +6,7 @@ defmodule Salad.Commands.Remove do
   alias Salad.Repo
 
   @impl true
-  def description, do: "Remove a role from a role group"
+  def description, do: "Delete a role group"
 
   @impl true
   def predicates,
@@ -22,15 +22,9 @@ defmodule Salad.Commands.Remove do
       %Option{
         name: "group",
         type: Option.Type.string(),
-        description: "The name of the group to remove the role from",
+        description: "The name of the group to delete",
         required: true,
         autocomplete: true
-      },
-      %Option{
-        name: "role",
-        type: Option.Type.role(),
-        description: "The role to remove from the group",
-        required: true
       }
     ]
 
@@ -54,20 +48,16 @@ defmodule Salad.Commands.Remove do
   @impl true
   def run(ctx) do
     %{
-      "group" => %{value: group},
-      "role" => %{value: role}
+      "group" => %{value: group}
     } = ctx.options
 
     with role_group when role_group != nil <-
            Repo.RoleGroup.get_by_name_and_guild(group, ctx.guild_id),
-         %Repo.Role{} = repo_role <-
-           Enum.find(role_group.roles, :no_role, fn r -> r.id == role.id end),
-         {:ok, _} <- Repo.Role.delete(repo_role),
-         {:ok, _} <- Repo.RoleGroup.update(role_group) do
+         {:ok, _} <- Repo.RoleGroup.delete(role_group) do
       reply(ctx, %{
         type: 4,
         data: %{
-          content: "Successfully removed #{role} from the \"#{group}\" group.",
+          content: "Successfully deleted the group \"#{group}\".",
           flags: 1 <<< 6
         }
       })
@@ -81,22 +71,13 @@ defmodule Salad.Commands.Remove do
           }
         })
 
-      :no_role ->
-        reply(ctx, %{
-          type: 4,
-          data: %{
-            content: "That role isn't a part of this group. Try picking another one.",
-            flags: 1 <<< 6
-          }
-        })
-
       {:error, %Ecto.Changeset{} = err} ->
-        Logger.error("Failed to remove role from group `#{group}`: #{inspect(err)}")
+        Logger.error("Failed to delete group `#{group}`: #{inspect(err)}")
 
         reply(ctx, %{
           type: 4,
           data: %{
-            content: "Failed to remove the role from the group.",
+            content: "Failed to delete the group.",
             flags: 1 <<< 6
           }
         })

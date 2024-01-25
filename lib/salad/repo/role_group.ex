@@ -120,4 +120,8 @@ defmodule Salad.Repo.RoleGroup do
     |> change(%{updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)})
     |> Repo.update()
   end
+
+  def delete(%__MODULE__{} = role_group) do
+    Repo.delete(role_group)
+  end
 end
