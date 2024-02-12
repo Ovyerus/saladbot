@@ -33,6 +33,7 @@ defmodule Salad.MixProject do
       {:nostrum,
        git: "https://github.com/Kraigie/nostrum.git",
        ref: "d2daf4941927bc4452a4e79acbef4a574ce32f57"},
+      {:oban, "~> 2.16"},
       {:sentry, "8.0.0"},
       {:postgrex, ">= 0.15.13"},
       {:typed_struct, "~> 0.2.1"},

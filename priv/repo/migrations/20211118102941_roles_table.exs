@@ -21,7 +21,7 @@ defmodule Salad.Repo.Migrations.RolesTable do
               name: "❓"
             },
             inserted_at: NaiveDateTime.utc_now(),
-            updated_at: NaiveDateTime.utc_now(),
+            updated_at: NaiveDateTime.utc_now()
           }
         end)
       end)
@@ -39,13 +39,11 @@ defmodule Salad.Repo.Migrations.RolesTable do
       remove :roles
     end
 
-
     flush()
 
     Repo.insert_all("roles", roles_to_insert)
   end
 
-  # TODO: down migration
   def down do
     roles =
       "roles"

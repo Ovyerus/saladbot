@@ -3,6 +3,10 @@ import Config
 config :elixir, time_zone_database: Tz.TimeZoneDatabase
 config :salad, ecto_repos: [Salad.Repo]
 
+config :nostrum,
+  request_guild_members: true,
+  gateway_intents: [:guild_members, :guild_presences, :guilds, :guild_emojis]
+
 config :logger,
   level:
     (case Mix.env() do
@@ -26,3 +30,7 @@ config :logger, :console,
 
 config :salad,
   sync_dev_guild: Mix.env() == :dev
+
+config :salad, Oban,
+  repo: Salad.Repo,
+  queues: [cheese_touch: 10]

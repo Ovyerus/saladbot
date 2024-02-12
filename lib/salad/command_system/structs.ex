@@ -108,50 +108,7 @@ defmodule Salad.CommandSystem.Structs do
 
     @spec from_interaction(NStruct.Interaction.t()) :: __MODULE__.t()
     def from_interaction(%{data: data} = interaction) do
-      options =
-        (data.options || [])
-        |> Stream.map(fn opt -> opt |> Map.from_struct() |> Map.drop([:options, :focused]) end)
-        |> Stream.map(fn opt ->
-          case opt.type do
-            # TODO: figure out subcommand & subcommand_group whenever I need it
-            x when x in [3, 4, 5, 10] ->
-              struct(ResolvedOption, Map.merge(opt, %{raw: opt.value}))
-
-            6 ->
-              struct(
-                ResolvedOption,
-                Map.merge(opt, %{
-                  # TODO: users or members?
-                  value: data.resolved.users[opt.value],
-                  raw: opt.value
-                })
-              )
-
-            7 ->
-              struct(
-                ResolvedOption,
-                Map.merge(opt, %{
-                  value: data.resolved.channels[opt.value],
-                  raw: opt.value
-                })
-              )
-
-            8 ->
-              struct(
-                ResolvedOption,
-                Map.merge(opt, %{
-                  value: data.resolved.roles[opt.value],
-                  raw: opt.value
-                })
-              )
-
-            9 ->
-              # TODO (mentionables, presumably match first in any, need to investigate)
-              nil
-          end
-        end)
-        |> Stream.map(fn opt -> {opt.name, opt} end)
-        |> Enum.into(%{})
+      options = map_options(data.options || [], data.resolved)
 
       # Was complaining for some reason about %__MODULE__
       struct(__MODULE__, %{
@@ -167,6 +124,64 @@ defmodule Salad.CommandSystem.Structs do
         type: interaction.type,
         source: data.type
       })
+    end
+
+    defp map_options(options, resolved) do
+      options
+      |> Stream.map(fn opt ->
+        opt = Map.from_struct(opt)
+
+        case opt.type do
+          # TODO: figure out subcommand_group whenever I need it
+          # TODO: instead create a `path` property and push subcommand/groups to that, and then options into the normal prop.
+          # Can normal options be defined before and outside of a subcommand?
+          x when x in [1, 2] ->
+            struct(
+              ResolvedOption,
+              Map.merge(opt, %{value: map_options(opt.options, resolved), raw: nil})
+            )
+
+          x when x in [3, 4, 5, 10] ->
+            struct(ResolvedOption, Map.merge(opt, %{raw: opt.value}))
+
+          # Users
+          6 ->
+            struct(
+              ResolvedOption,
+              Map.merge(opt, %{
+                # TODO: users or members?
+                value: resolved.users[opt.value],
+                raw: opt.value
+              })
+            )
+
+          # Channels
+          7 ->
+            struct(
+              ResolvedOption,
+              Map.merge(opt, %{
+                value: resolved.channels[opt.value],
+                raw: opt.value
+              })
+            )
+
+          # Roles
+          8 ->
+            struct(
+              ResolvedOption,
+              Map.merge(opt, %{
+                value: resolved.roles[opt.value],
+                raw: opt.value
+              })
+            )
+
+          9 ->
+            # TODO (mentionables, presumably match first in any, need to investigate)
+            nil
+        end
+      end)
+      |> Stream.map(fn opt -> {opt.name, opt} end)
+      |> Enum.into(%{})
     end
   end
 end

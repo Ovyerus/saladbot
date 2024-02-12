@@ -38,11 +38,23 @@ defmodule Salad.CommandSystem do
   def all_commands(), do: :ets.tab2list(@commands_table)
 
   def register_commands_for_guild(guild_id) do
-    all_commands()
-    |> Enum.map(fn {_, {struct, _}} ->
-      struct
-    end)
-    |> then(&Api.bulk_overwrite_guild_application_commands(guild_id, &1))
+    registered =
+      all_commands()
+      |> Enum.map(fn {_, {struct, _}} ->
+        struct
+      end)
+      |> then(&Api.bulk_overwrite_guild_application_commands(guild_id, &1))
+
+    case registered do
+      {:ok, _} ->
+        Logger.info("Synced commands for dev server #{guild_id}")
+        :ok
+
+      e ->
+        Logger.info("Failed to sync commands for dev server #{guild_id}")
+        IO.inspect(e)
+        e
+    end
   end
 
   def register_commands_global() do
@@ -51,6 +63,8 @@ defmodule Salad.CommandSystem do
       struct
     end)
     |> then(&Api.bulk_overwrite_global_application_commands/1)
+
+    Logger.info("Synced commands globally")
   end
 
   @spec process_interaction(Nostrum.Struct.Interaction.t()) :: any()
