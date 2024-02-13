@@ -33,4 +33,11 @@ config :salad,
 
 config :salad, Oban,
   repo: Salad.Repo,
-  queues: [cheese_touch: 10]
+  queues: [cheese_touch: 10],
+  plugins: [
+    {
+      Oban.Plugins.Pruner,
+      # Run every 4 hours
+      interval: 1000 * 60 * 60 * 4
+    }
+  ]
