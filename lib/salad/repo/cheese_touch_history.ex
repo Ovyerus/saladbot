@@ -46,4 +46,12 @@ defmodule Salad.Repo.CheeseTouchHistory do
     |> limit(^amt)
     |> Repo.all()
   end
+
+  def get_last_for_guild(guild_id) do
+    __MODULE__
+    |> where(guild_id: ^guild_id)
+    |> order_by(desc: :inserted_at)
+    |> limit(1)
+    |> Repo.one()
+  end
 end

@@ -33,10 +33,15 @@ defmodule Salad.Commands.Transfer do
 
     {:ok, member} = Nostrum.Cache.MemberCache.get(ctx.guild_id, user.id)
 
-    with %Repo.Guild{cheese_touch_channel: channel_id, cheese_touch_role: role_id}
+    with {:ok} <- reply(ctx, %{type: 5, data: %{flags: 1 <<< 6}}),
+         %Repo.Guild{cheese_touch_channel: channel_id, cheese_touch_role: role_id}
          when channel_id != nil and role_id != nil <- Repo.Guild.get(ctx.guild_id),
          true <- role_id in ctx.member.roles or :not_cheesed,
-         {:ok} <- reply(ctx, %{type: 5, data: %{flags: 1 <<< 6}}),
+         %Repo.CheeseTouchHistory{} = last_user <-
+           Repo.CheeseTouchHistory.get_last_for_guild(ctx.guild_id),
+         true <-
+           last_user.user_id != ctx.member.user_id or last_user.reason != :transfer or
+             :cannot_transfer,
          {:ok, channel_id, member} <- Salad.CheeseTouch.run(ctx.guild_id, :transfer, member),
          {:ok, _} <-
            Api.create_message(
@@ -55,6 +60,11 @@ defmodule Salad.Commands.Transfer do
       :not_cheesed ->
         Api.edit_interaction_response(ctx.token, %{
           content: "You don't have the cheese touch yet, silly."
+        })
+
+      :cannot_transfer ->
+        Api.edit_interaction_response(ctx.token, %{
+          content: "You were last passed the cheese touch so you cannot re-transfer it!"
         })
 
       e ->
