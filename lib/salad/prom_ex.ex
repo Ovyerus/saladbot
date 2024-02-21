@@ -1,5 +1,5 @@
 defmodule Salad.PromEx do
-  use PromEx, otp_app: :cake
+  use PromEx, otp_app: :salad
   alias PromEx.Plugins
 
   @impl true
