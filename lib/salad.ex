@@ -8,6 +8,7 @@ defmodule Salad do
   @impl true
   def start(_type, _args) do
     children = [
+      Salad.PromEx,
       Salad.Repo,
       {Oban, Application.fetch_env!(:salad, Oban)},
       Salad.Consumer

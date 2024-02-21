@@ -41,3 +41,11 @@ config :salad, Oban,
       interval: 1000 * 60 * 60 * 4
     }
   ]
+
+config :salad, Salad.PromEx,
+  disabled: false,
+  manual_metrics_start_delay: :no_delay,
+  drop_metrics_groups: [],
+  metrics_server: [
+    port: 4100
+  ]

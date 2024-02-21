@@ -36,6 +36,7 @@ defmodule Salad.MixProject do
       {:oban, "~> 2.16"},
       {:sentry, "8.0.0"},
       {:postgrex, ">= 0.15.13"},
+      {:prom_ex, "~> 1.9"},
       {:typed_struct, "~> 0.2.1"},
       {:tz, "~> 0.12.0"},
       {:observer_cli, "~> 1.7"}
