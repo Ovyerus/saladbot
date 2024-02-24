@@ -20,7 +20,7 @@ defmodule Salad.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
+  # When adding/updating dependencies, make sure to run `mix2nix > mix.nix`
   defp deps do
     [
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},

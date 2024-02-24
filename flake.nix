@@ -14,7 +14,6 @@
         pkgs = import nixpkgs {inherit system;};
         # Don't include anything extra like systemd & wxwidgets
         beam' = pkgs.beam_minimal.packages.erlang_26;
-        fs = pkgs.lib.fileset;
 
         elixir = beam'.elixir_1_16;
         erlang = beam'.erlang;
@@ -30,18 +29,36 @@
         pname = "salad";
         version = "0.1.0";
 
-        mixFodDeps = beam'.fetchMixDeps {
-          inherit version elixir erlang;
-          pname = "mix-deps-${pname}";
-          src = fs.toSource {
-            root = ./.;
-            fileset = fs.unions mixFiles;
+        mixNixDeps = import ./mix.nix {
+          lib = pkgs.lib;
+          beamPackages = beam';
+
+          # TODO: problem with deps not being included?
+          overrides = final: prev: {
+            nostrum = beam'.buildMix {
+              name = "nostrum";
+              version = "0.9.0-alpha2";
+              enableDebugInfo = true;
+
+              src = pkgs.fetchFromGitHub {
+                owner = "Kraigie";
+                repo = "nostrum";
+                rev = "d2daf4941927bc4452a4e79acbef4a574ce32f57";
+                hash = "sha256-W+aJ1+rDtLpURAa9h19gm6GUOZytDZ5TGCD4mJ5wJe0=";
+              };
+
+              # Trying to build in nix with `:appup` as a compiler results in
+              # that compiler not being found for some reason. Tried a little
+              # debugging but decided yeeting it entirely is just the easiest
+              # solution for now.
+              patches = [./no-appup.patch];
+              beamDeps = with final; [jason gun certifi kcl mime castle];
+            };
           };
-          hash = "sha256-a0e2y0JQcfeXhTpauDri/DsqJTAKH4WRVY8M6e3BLDU=";
         };
 
         release = beam'.mixRelease {
-          inherit pname version elixir erlang mixFodDeps nativeBuildInputs;
+          inherit pname version elixir erlang mixNixDeps nativeBuildInputs;
 
           # TODO: figure out how to include only the app code so that only
           # relevant changes are caught (fs.toSource/unions doesn't work for
@@ -74,7 +91,7 @@
           mkShell {
             inherit nativeBuildInputs;
             # Use the full fat BEAM packages as it contains extra things that might be useful during development.
-            buildInputs = with beam'; [elixir_1_16 erlang];
+            buildInputs = [elixir_1_16 erlang];
           };
 
         packages = {
