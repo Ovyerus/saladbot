@@ -29,15 +29,28 @@ defmodule Salad.Commands.Create do
         name: "description",
         type: Option.Type.string(),
         description: "The description for the group"
+      },
+      %{
+        name: "display_type",
+        type: Option.Type.string(),
+        description: "What the role selection should display as when this group is synced",
+        choices: [%{name: "Buttons", value: "buttons"}, %{name: "Select menu", value: "select"}]
       }
     ]
 
   @impl true
   def run(ctx) do
     %{"name" => %{value: name}} = ctx.options
-    description = Map.get(ctx.options, "description", %{value: nil})
+    %{value: description} = Map.get(ctx.options, "description", %{value: nil})
+    %{value: display_type} = Map.get(ctx.options, "display_type", %{value: "buttons"})
 
-    case Repo.RoleGroup.create(name, description.value, ctx.guild_id) do
+    case Repo.RoleGroup.create(
+           name,
+           description,
+           # buttons/select atoms are guaranteed to exist due to the role group module.
+           String.to_existing_atom(display_type),
+           ctx.guild_id
+         ) do
       {:ok, group} ->
         reply(ctx, %{
           type: 4,

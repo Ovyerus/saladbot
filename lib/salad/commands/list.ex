@@ -3,6 +3,7 @@ defmodule Salad.Commands.List do
   use Salad.CommandSystem.Command
   alias Nostrum.Struct.Embed
   alias Salad.Repo
+  import Bitwise
 
   @impl true
   def description, do: "List role groups for the server"
@@ -18,7 +19,13 @@ defmodule Salad.Commands.List do
   def run(ctx) do
     case Repo.RoleGroup.get_for_guild(ctx.guild_id) do
       [] ->
-        nil
+        reply(ctx, %{
+          type: 4,
+          data: %{
+            content: "No role groups for this server!",
+            flags: 1 <<< 6
+          }
+        })
 
       role_groups ->
         {:ok, guild} = Nostrum.Cache.GuildCache.get(ctx.guild_id)

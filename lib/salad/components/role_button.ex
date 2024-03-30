@@ -1,4 +1,4 @@
-defmodule Salad.Components.Role do
+defmodule Salad.Components.RoleButton do
   @moduledoc false
   use Salad.CommandSystem.Component, type: :button
   import Bitwise

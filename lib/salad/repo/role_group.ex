@@ -12,6 +12,7 @@ defmodule Salad.Repo.RoleGroup do
   @type guild_id() :: pos_integer()
   @type guild() :: Repo.Guild.t() | nil
   @type roles() :: list(Repo.Role.t()) | nil
+  @type display_type() :: :buttons | :select
 
   @typep repo_result() :: {:ok, t()} | {:error, Ecto.Changeset.t()}
 
@@ -21,16 +22,19 @@ defmodule Salad.Repo.RoleGroup do
           description: description(),
           guild_id: guild_id(),
           guild: guild(),
-          roles: roles()
+          roles: roles(),
+          display_type: display_type()
         }
 
-  @required ~w(guild_id name)a
+  @required ~w(guild_id name display_type)a
   @optional ~w(description)a
   @all @required ++ @optional
 
   schema "role_groups" do
     field :name, :string
     field :description, :string
+    # TODO: toggle/multi-select option.
+    field :display_type, Ecto.Enum, values: [:buttons, :select]
 
     belongs_to :guild, Repo.Guild, type: :integer
     has_many :roles, Repo.Role, foreign_key: :group_id
@@ -46,13 +50,14 @@ defmodule Salad.Repo.RoleGroup do
     |> unique_constraint([:name, :guild_id], name: "role_groups_unique_name_per_guild")
   end
 
-  @spec create(name(), description(), guild_id()) :: repo_result()
-  def create(name, description, guild_id)
+  @spec create(name(), description(), display_type(), guild_id()) :: repo_result()
+  def create(name, description, display_type, guild_id)
       when is_binary(name) and (is_binary(description) or is_nil(description)) and
              is_integer(guild_id) do
     params = %{
       name: name,
       description: description,
+      display_type: display_type,
       guild_id: guild_id
     }
 

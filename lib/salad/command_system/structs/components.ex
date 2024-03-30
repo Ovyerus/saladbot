@@ -34,9 +34,10 @@ defmodule Salad.CommandSystem.Structs.Components do
   typedstruct module: SelectMenu do
     @derive Jason.Encoder
 
-    field :type, 3, default: 3
+    field :type, 3 | 5 | 6 | 7 | 8, default: 3
     field :custom_id, String.t(), enforce: true
-    field :options, list(Option.t()), enforce: true
+    field :options, list(Option.t())
+    field :default_values, list(DefaultValue.t())
     field :min_values, pos_integer(), default: 1
     field :max_values, pos_integer(), default: 1
 
@@ -48,6 +49,13 @@ defmodule Salad.CommandSystem.Structs.Components do
       field :default, boolean()
       field :description, String.t()
       field :emoji, PartialEmoji.t()
+    end
+
+    typedstruct module: DefaultValue do
+      @derive Jason.Encoder
+
+      field :id, String.t(), enforce: true
+      field :type, String.t(), enforce: true
     end
   end
 end

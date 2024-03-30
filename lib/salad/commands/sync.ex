@@ -4,7 +4,8 @@ defmodule Salad.Commands.Sync do
   use Salad.CommandSystem.Command
   alias Nostrum.Struct.Guild.Member
   alias Nostrum.Cache.{Me, GuildCache, MemberCache}
-  alias Salad.Components.Role, as: RoleButton
+  alias Salad.Components.{RoleButton, RoleMenu}
+  alias Salad.CommandSystem.Structs.Components.SelectMenu
   alias Salad.Repo
 
   @impl true
@@ -98,15 +99,41 @@ defmodule Salad.Commands.Sync do
             for group <- nonempty_groups do
               # Action rows can only have 5 buttons each
               components =
-                group.roles
-                |> Enum.map(&RoleButton.new(emoji: &1.icon, arg: &1.id))
-                |> Enum.chunk_every(5)
-                |> Enum.map(&%ActionRow{components: &1})
+                case group.display_type do
+                  :buttons ->
+                    group.roles
+                    |> Enum.map(&RoleButton.new(emoji: &1.icon, arg: &1.id))
+                    |> Enum.chunk_every(5)
+                    |> Enum.map(&%ActionRow{components: &1})
+
+                  :select ->
+                    RoleMenu.new(
+                      arg: group.id,
+                      max_values: length(group.roles),
+                      options:
+                        Enum.map(group.roles, fn r ->
+                          role = Map.get(guild.roles, r.id, %{name: "unknown"})
+
+                          %SelectMenu.Option{
+                            label: role.name,
+                            value: Integer.to_string(r.id),
+                            emoji: r.icon
+                          }
+                        end)
+                    )
+                    |> then(&[%ActionRow{components: [&1]}])
+                end
 
               role_list =
-                group.roles
-                |> Enum.map(fn role -> "#{role.icon} - <@&#{role.id}>" end)
-                |> Enum.join("\n")
+                case group.display_type do
+                  :buttons ->
+                    group.roles
+                    |> Enum.map(fn role -> "#{role.icon} - <@&#{role.id}>" end)
+                    |> Enum.join("\n")
+
+                  :select ->
+                    ""
+                end
 
               args = [
                 content: """
@@ -123,6 +150,7 @@ defmodule Salad.Commands.Sync do
                   {:ok, msg} = Api.create_message(channel_id, args)
                   Repo.RoleGroupMessage.create(msg.id, msg.channel_id, group.id)
 
+                # TODO: if messages dont exist, create
                 messages ->
                   # TODO: pr to allow allowed_mentions on edit
                   {_, no_mentions_args} = Keyword.pop(args, :allowed_mentions)

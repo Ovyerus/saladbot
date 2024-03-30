@@ -56,13 +56,17 @@ defmodule Salad.CommandSystem.Component do
 
             :select_menu ->
               quote do
+                {type, opts} = Keyword.pop(opts, :type, 3)
                 {options, opts} = Keyword.pop(opts, :options)
+                {default_values, opts} = Keyword.pop(opts, :default_values)
                 {min_values, opts} = Keyword.pop(opts, :min_values, 1)
                 {max_values, opts} = Keyword.pop(opts, :max_values, 1)
 
                 %Components.SelectMenu{
                   custom_id: custom_id,
+                  type: type,
                   options: options,
+                  default_values: default_values,
                   min_values: min_values,
                   max_values: max_values
                 }
@@ -80,6 +84,7 @@ defmodule Salad.CommandSystem.Component do
 
   @callback run(ev :: Nostrum.Struct.Interaction.t(), arg :: String.t()) :: any()
 
+  # TODO: simplify this and remove hmac, just have a guard on components to ensure no ephemeral BS, or smth.
   @spec generate_id(String.t(), any()) :: String.t()
   def generate_id(name, arg \\ "") do
     "#{name}::#{arg}"
