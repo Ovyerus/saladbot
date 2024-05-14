@@ -3,7 +3,7 @@ defmodule Salad.Repo.Migrations.RoleGroupDisplayType do
 
   def change do
     alter table(:role_groups) do
-      add :display_type, :text, null: false
+      add :display_type, :text, null: false, default: "buttons"
     end
   end
 end
