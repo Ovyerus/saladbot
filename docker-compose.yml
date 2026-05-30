@@ -1,20 +1,15 @@
-version: "3"
 services:
-  salad:
-    image: "ghcr.io/ovyerus/saladbot"
-    depends_on:
-      salad_psql:
-        condition: service_healthy
-    restart: "unless-stopped"
-    env_file: ".env"
-    environment:
-      SALAD_DB_HOST: "salad_psql"
   salad_psql:
-    image: "postgres:13-alpine"
+    image: "postgres:17-alpine"
     restart: "unless-stopped"
-    env_file: ".env"
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - "salad_psql:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: salad
+      POSTGRES_USER: salad
+      POSTGRES_DB: salad
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: "5s"

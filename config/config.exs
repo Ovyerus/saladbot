@@ -13,7 +13,7 @@ config :logger,
        :prod -> :info
        _ -> :debug
      end),
-  backends: [:console, Sentry.LoggerBackend],
+  backends: [:console],
   truncate: :infinity
 
 config :sentry,
@@ -33,7 +33,7 @@ config :salad,
 
 config :salad, Oban,
   repo: Salad.Repo,
-  queues: [cheese_touch: 10],
+  queues: [cheese_touch: 10, qotd: 10],
   plugins: [
     {
       Oban.Plugins.Pruner,

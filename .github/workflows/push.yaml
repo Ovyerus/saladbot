@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
 
       - uses: DeterminateSystems/nix-installer-action@main
         # with:
@@ -28,8 +28,7 @@ jobs:
 
       - name: Set tag name
         id: tag
-        run:
-          'echo "::set-output name=tag::${{ github.ref_name == ''master'' &&
+        run: 'echo "::set-output name=tag::${{ github.ref_name == ''master'' &&
           ''latest'' || github.ref_name }}"'
 
       - name: Push Docker image

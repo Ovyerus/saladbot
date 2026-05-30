@@ -10,6 +10,8 @@ defmodule Salad.Repo.Guild do
   @type cheese_touch_channel() :: pos_integer() | nil
   @type cheese_touch_role() :: pos_integer() | nil
   @type role_groups() :: list(Repo.RoleGroup.t()) | nil
+  @type qotd_channel() :: pos_integer() | nil
+  @type qotd_time() :: Time.t() | nil
 
   @typep repo_result() :: {:ok, t()} | {:error, Ecto.Changeset.t()}
 
@@ -17,11 +19,13 @@ defmodule Salad.Repo.Guild do
           id: id(),
           cheese_touch_channel: cheese_touch_channel(),
           cheese_touch_role: cheese_touch_role(),
-          role_groups: role_groups()
+          role_groups: role_groups(),
+          qotd_channel: qotd_channel(),
+          qotd_time: qotd_time()
         }
 
   @required ~w(id)a
-  @optional ~w(cheese_touch_channel cheese_touch_role)a
+  @optional ~w(cheese_touch_channel cheese_touch_role qotd_channel qotd_time)a
   @all @required ++ @optional
 
   @primary_key {:id, :id, autogenerate: false}
@@ -29,6 +33,8 @@ defmodule Salad.Repo.Guild do
   schema "guilds" do
     field :cheese_touch_channel, :integer
     field :cheese_touch_role, :integer
+    field :qotd_channel, :integer
+    field :qotd_time, :time
     has_many :role_groups, Repo.RoleGroup
     timestamps()
   end

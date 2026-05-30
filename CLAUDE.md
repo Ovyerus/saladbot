@@ -37,19 +37,13 @@ nix build           # build OTP release
 nix build .#docker  # build Docker image (Linux only)
 ```
 
-When adding or updating Mix deps, regenerate `mix.nix`:
-
-```sh
-mix2nix > mix.nix
-```
-
 ### Required Environment Variables
 
-| Variable | Description |
-|---|---|
-| `SALAD_TOKEN` | Discord bot token |
-| `SALAD_OWNER` | Discord user ID of bot owner (integer) |
-| `SALAD_HMAC_KEY` | Key for HMAC-signing component custom IDs |
+| Variable          | Description                                 |
+| ----------------- | ------------------------------------------- |
+| `SALAD_TOKEN`     | Discord bot token                           |
+| `SALAD_OWNER`     | Discord user ID of bot owner (integer)      |
+| `SALAD_HMAC_KEY`  | Key for HMAC-signing component custom IDs   |
 | `SALAD_DEV_GUILD` | Guild ID for dev slash command registration |
 
 See `config/runtime.exs` for the full list including optional DB and Grafana vars.
@@ -71,6 +65,7 @@ Before the supervisor starts, `Salad.CommandSystem.setup/0` populates two ETS ta
 ### Command System (`lib/salad/command_system/`)
 
 The central dispatcher. Incoming Discord interactions are routed by type:
+
 - **Slash commands** → ETS lookup by name, runs predicates, calls `mod.run(ctx)`
 - **Message components** → parses HMAC-signed `custom_id`, calls `mod.run(ev, arg)`
 - **Autocomplete** → calls `mod.autocomplete(ev)`
@@ -86,6 +81,7 @@ The central dispatcher. Incoming Discord interactions are routed by type:
 ### Repo Layer (`lib/salad/repo/`)
 
 Each file colocates an Ecto schema with its query functions. Key schemas:
+
 - `Guild` — per-guild settings; references cheese touch channel/role
 - `RoleGroup` — named groups with `:buttons` or `:select` display type
 - `Role` — individual Discord role entries within a group
