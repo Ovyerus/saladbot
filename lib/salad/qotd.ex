@@ -33,7 +33,7 @@ defmodule Salad.Qotd do
         {:cancel, :no_questions_remaining}
 
       %Repo.QotdQuestion{} = question ->
-        with {:ok, _} <- Nostrum.Api.create_message(channel_id, "**today's QOTD is:** #{question.content}"),
+        with {:ok, _} <- Nostrum.Api.create_message(channel_id, "today's QOTD is: **#{question.content}**"),
              {:ok, _} <- Repo.QotdQuestion.mark_posted(question),
              {:ok, _} <- schedule(guild_id) do
           Logger.info("Posted QOTD for guild #{guild_id}, question id=#{question.id}")
