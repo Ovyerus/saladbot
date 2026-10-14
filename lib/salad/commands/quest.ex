@@ -12,7 +12,7 @@ defmodule Salad.Commands.Quest do
 
   @impl true
   def run(ctx) do
-    case Salad.Quest.draw(ctx.guild_id, ctx.user.id, fn message ->
+    case Salad.Quest.draw(ctx.guild_id, ctx.user.id, ctx.channel_id, fn message ->
            reply(ctx, %{type: 4, data: message})
          end) do
       {:ok, _choice} ->
@@ -32,6 +32,9 @@ defmodule Salad.Commands.Quest do
   defp error_message({:cooldown, ends_at}) do
     "You can get another quest <t:#{DateTime.to_unix(ends_at)}:R>."
   end
+
+  defp error_message({:wrong_channel, channel_id}),
+    do: "Use `/quest` in <##{channel_id}>. Your cooldown and rerolls haven't changed."
 
   defp error_message(:empty_pool),
     do: "There are no quests in this server yet. A moderator can add some with `/quest-pool add`."

@@ -13,8 +13,12 @@ Members with **Manage Server** permission (including administrators) can use:
 - `/quest-pool add quest:<text>` — add a quest and receive its ID.
 - `/quest-pool list` — preview this server's quests and IDs.
 - `/quest-pool remove quest:<id>` — remove a quest; autocomplete searches by text or ID.
+- `/quest-channel channel:#quests` — restrict `/quest` to a server text or announcement channel.
+- `/quest-channel` — clear the restriction and allow `/quest` in any channel.
 
 Quests belong to the server where they were added. They remain available until explicitly removed.
+
+Servers start with no channel restriction. When configured, it applies to everyone, including admins, for both initial draws and rerolls. Requests elsewhere receive a link to the required channel without consuming a cooldown or reroll. The restriction matches that exact channel; threads within it are separate channels. Settings are per server, take effect immediately, and survive restarts. Setting, changing, or clearing the restriction does not reset existing cooldowns or reroll usage. The administration commands remain usable outside the restricted channel.
 
 ### Getting a quest
 
