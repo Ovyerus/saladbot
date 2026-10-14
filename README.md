@@ -21,10 +21,12 @@ Quests belong to the server where they were added. They remain available until e
 Run `/quest` with no parameters:
 
 - If you have no active quest, or your two-hour cooldown has ended, you receive a new random quest publicly in the channel.
-- Run `/quest` again within ten minutes of the original draw to automatically use your one reroll. If more than one quest is available, it chooses a different quest; a single-entry pool returns that same quest.
-- Further requests, or requests after the ten-minute reroll window, show when your cooldown ends.
+- Run `/quest` again up to twice within ten minutes of the original draw to automatically use your two rerolls. If more than one quest is available, each reroll chooses a different quest from your current one; a single-entry pool returns that same quest.
+- Once both rerolls are used, or the original ten-minute window has closed, further requests show when your cooldown ends.
 
-Each user has a **two-hour cooldown per server**, starting at the original draw. Rerolling does not restart or shorten it. A fresh draw after the cooldown gets a new reroll window. Both cooldowns and used rerolls survive bot restarts. Failed rendering or delivery does not consume a draw or reroll.
+Each user has a **two-hour cooldown per server**, starting at the original draw. Neither reroll restarts or shortens it, and both share the same ten-minute window from that first draw. A fresh draw after the cooldown resets the reroll count and window. Both cooldowns and used rerolls survive bot restarts. Failed rendering or delivery does not consume a draw or reroll.
+
+Quest selection is random, not a sequential walk through the list. Rerolls exclude only the current quest when alternatives exist, so a later reroll can return an earlier quest. The pool never depletes.
 
 Responses use this template, with `user` rendered as a mention:
 

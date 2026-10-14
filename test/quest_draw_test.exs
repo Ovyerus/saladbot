@@ -20,21 +20,24 @@ defmodule Salad.Repo.QuestDrawTest do
     assert QuestDraw.check(draw, DateTime.add(ends_at, 1, :second)) == {:ok, :draw}
   end
 
-  test "repeat requests automatically reroll until exactly ten minutes" do
-    draw = %QuestDraw{drawn_at: @drawn_at}
+  test "either unused reroll is available until exactly ten minutes" do
     ends_at = DateTime.add(@drawn_at, 600, :second)
     cooldown_ends = DateTime.add(@drawn_at, 7200, :second)
 
-    assert QuestDraw.check(draw, @drawn_at) == {:ok, :reroll}
-    assert QuestDraw.check(draw, DateTime.add(ends_at, -1, :microsecond)) == {:ok, :reroll}
-    assert QuestDraw.check(draw, ends_at) == {:error, {:cooldown, cooldown_ends}}
+    for reroll_count <- [0, 1] do
+      draw = %QuestDraw{drawn_at: @drawn_at, reroll_count: reroll_count}
 
-    assert QuestDraw.check(draw, DateTime.add(ends_at, 1, :second)) ==
-             {:error, {:cooldown, cooldown_ends}}
+      assert QuestDraw.check(draw, @drawn_at) == {:ok, :reroll}
+      assert QuestDraw.check(draw, DateTime.add(ends_at, -1, :microsecond)) == {:ok, :reroll}
+      assert QuestDraw.check(draw, ends_at) == {:error, {:cooldown, cooldown_ends}}
+
+      assert QuestDraw.check(draw, DateTime.add(ends_at, 1, :second)) ==
+               {:error, {:cooldown, cooldown_ends}}
+    end
   end
 
-  test "a used reroll blocks further requests until the original cooldown ends" do
-    draw = %QuestDraw{drawn_at: @drawn_at, rerolled: true}
+  test "two used rerolls block further requests until the original cooldown ends" do
+    draw = %QuestDraw{drawn_at: @drawn_at, reroll_count: 2}
     now = DateTime.add(@drawn_at, 60, :second)
 
     assert QuestDraw.check(draw, now) ==
@@ -44,8 +47,8 @@ defmodule Salad.Repo.QuestDrawTest do
   test "after two hours a request gets a fresh draw regardless of reroll usage" do
     now = DateTime.add(@drawn_at, 7200, :second)
 
-    for rerolled <- [false, true] do
-      draw = %QuestDraw{drawn_at: @drawn_at, rerolled: rerolled}
+    for reroll_count <- [0, 1, 2] do
+      draw = %QuestDraw{drawn_at: @drawn_at, reroll_count: reroll_count}
       assert QuestDraw.check(draw, now) == {:ok, :draw}
     end
   end

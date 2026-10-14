@@ -52,8 +52,8 @@ defmodule Salad.Quest do
 
     params =
       if action == :reroll,
-        do: Map.put(params, :rerolled, true),
-        else: Map.merge(params, %{drawn_at: now, rerolled: false})
+        do: Map.put(params, :reroll_count, previous.reroll_count + 1),
+        else: Map.merge(params, %{drawn_at: now, reroll_count: 0})
 
     (previous || %QuestDraw{})
     |> QuestDraw.changeset(params)
