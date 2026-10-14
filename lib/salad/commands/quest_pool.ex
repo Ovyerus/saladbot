@@ -2,6 +2,7 @@ defmodule Salad.Commands.QuestPool do
   @moduledoc false
   use Salad.CommandSystem.Command
 
+  alias Salad.Quest.PoolList
   alias Salad.Repo.QuestChoice
 
   @impl true
@@ -67,7 +68,7 @@ defmodule Salad.Commands.QuestPool do
 
           Enum.map(choices, fn choice ->
             label = "#{choice.id}: #{single_line(choice.content)}"
-            %{name: truncate(label, 100), value: to_string(choice.id)}
+            %{name: PoolList.truncate(label, 100), value: to_string(choice.id)}
           end)
 
         _ ->
@@ -130,38 +131,8 @@ defmodule Salad.Commands.QuestPool do
   end
 
   defp run_list(ctx) do
-    case QuestChoice.get_for_guild(ctx.guild_id) do
-      [] ->
-        respond(ctx, "This server's quest pool is empty. Add a quest with `/quest-pool add`.")
-
-      choices ->
-        header = "Quests in this server's pool (ID: quest):\n"
-        total = length(choices)
-
-        # Leave room for the truncation note, even if every quest is displayed.
-        {lines, shown, _remaining} =
-          Enum.reduce_while(choices, {[], 0, 1850 - utf16_length(header)}, fn choice,
-                                                                              {lines, shown,
-                                                                               remaining} ->
-            line = "`#{choice.id}`: #{truncate(single_line(choice.content), 180)}\n"
-            length = utf16_length(line)
-
-            if length <= remaining do
-              {:cont, {[line | lines], shown + 1, remaining - length}}
-            else
-              {:halt, {lines, shown, remaining}}
-            end
-          end)
-
-        note =
-          if shown < total do
-            "\nShowing #{shown} of #{total} quests; list truncated. Use `/quest-pool remove` autocomplete to find more."
-          else
-            ""
-          end
-
-        respond(ctx, IO.iodata_to_binary([header, Enum.reverse(lines), note]))
-    end
+    data = PoolList.page(ctx.guild_id, ctx.user.id) |> Map.put(:flags, 64)
+    reply(ctx, %{type: 4, data: data})
   end
 
   defp focused_option(options) do
@@ -179,34 +150,11 @@ defmodule Salad.Commands.QuestPool do
   defp respond(ctx, content) do
     reply(ctx, %{
       type: 4,
-      data: %{content: truncate(content, 2000), flags: 64, allowed_mentions: %{parse: []}}
+      data: %{
+        content: PoolList.truncate(content, 2000),
+        flags: 64,
+        allowed_mentions: %{parse: []}
+      }
     })
-  end
-
-  defp truncate(content, limit) do
-    if utf16_length(content) <= limit do
-      content
-    else
-      take_utf16(content, limit - 3, []) <> "..."
-    end
-  end
-
-  defp utf16_length(content), do: utf16_length(content, 0)
-  defp utf16_length(<<>>, length), do: length
-
-  defp utf16_length(<<codepoint::utf8, rest::binary>>, length) do
-    utf16_length(rest, length + if(codepoint > 0xFFFF, do: 2, else: 1))
-  end
-
-  defp take_utf16(<<>>, _remaining, acc), do: acc |> Enum.reverse() |> IO.iodata_to_binary()
-
-  defp take_utf16(<<codepoint::utf8, rest::binary>>, remaining, acc) do
-    size = if codepoint > 0xFFFF, do: 2, else: 1
-
-    if size <= remaining do
-      take_utf16(rest, remaining - size, [<<codepoint::utf8>> | acc])
-    else
-      acc |> Enum.reverse() |> IO.iodata_to_binary()
-    end
   end
 end

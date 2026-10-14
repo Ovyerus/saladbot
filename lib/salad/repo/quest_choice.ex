@@ -15,6 +15,7 @@ defmodule Salad.Repo.QuestChoice do
   @typep repo_result() :: {:ok, t()} | {:error, Changeset.t()}
 
   @required ~w(guild_id content)a
+  @page_size 8
 
   schema "quest_choices" do
     field :content, :string
@@ -67,6 +68,22 @@ defmodule Salad.Repo.QuestChoice do
     |> where(guild_id: ^guild_id)
     |> order_by(asc: :inserted_at, asc: :id)
     |> Repo.all()
+  end
+
+  def get_page_for_guild(guild_id, requested_page) when is_integer(requested_page) do
+    pool = from(q in __MODULE__, where: q.guild_id == ^guild_id)
+    total = Repo.aggregate(pool, :count)
+    pages = max(div(total + @page_size - 1, @page_size), 1)
+    page = requested_page |> max(0) |> min(pages - 1)
+
+    choices =
+      pool
+      |> order_by(asc: :inserted_at, asc: :id)
+      |> limit(@page_size)
+      |> offset(^(page * @page_size))
+      |> Repo.all()
+
+    %{choices: choices, page: page, pages: pages, total: total}
   end
 
   @spec search_for_guild(pos_integer(), String.t()) :: list(t())

@@ -11,12 +11,14 @@ Run `/setup` for the server first. Quests are separate from QOTD: nothing is sch
 Members with **Manage Server** permission (including administrators) can use:
 
 - `/quest-pool add quest:<text>` — add a quest and receive its ID.
-- `/quest-pool list` — preview this server's quests and IDs.
+- `/quest-pool list` — privately browse quest previews and IDs, eight per page, with Previous/Next buttons.
 - `/quest-pool remove quest:<id>` — remove a quest; autocomplete searches by text or ID.
 - `/quest-channel channel:#quests` — restrict `/quest` to a server text or announcement channel.
 - `/quest-channel` — clear the restriction and allow `/quest` in any channel.
 
 Quests belong to the server where they were added. They remain available until explicitly removed.
+
+The list shows a page counter and disables navigation at the first/last page. Only the member who opened it can navigate, and they must still have Manage Server permission. Each click reads the current pool; if quests were removed, a stale page is clamped to the new last page. An empty pool removes the buttons. Long quest text is previewed to keep every page within Discord's message limit.
 
 Servers start with no channel restriction. When configured, it applies to everyone, including admins, for both initial draws and rerolls. Requests elsewhere receive a link to the required channel without consuming a cooldown or reroll. The restriction matches that exact channel; threads within it are separate channels. Settings are per server, take effect immediately, and survive restarts. Setting, changing, or clearing the restriction does not reset existing cooldowns or reroll usage. The administration commands remain usable outside the restricted channel.
 
@@ -74,4 +76,4 @@ The new command modules are discovered by the existing command registration syst
 mix test --no-start
 ```
 
-`--no-start` runs the tests without starting the Discord connection or the application's database supervision tree. Quest tests cover cooldown/reroll boundaries and role-placeholder rendering using Nostrum's member cache.
+`--no-start` runs the tests without starting the Discord connection or the application's database supervision tree. Quest tests cover cooldown/reroll boundaries, role-placeholder rendering using Nostrum's member cache, pagination boundaries and Discord size limits, and button authorization.
