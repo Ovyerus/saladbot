@@ -39,9 +39,16 @@ defmodule Salad.Commands.Quest do
     end
   end
 
+  defp error_message({:cooldown, ends_at}, :prompt) do
+    "You've used your three prompts for this hour. You can get another prompt <t:#{DateTime.to_unix(ends_at)}:R>."
+  end
+
   defp error_message({:cooldown, ends_at}, pool) do
     "You can get another #{pool} <t:#{DateTime.to_unix(ends_at)}:R>."
   end
+
+  defp error_message({:wrong_channel, channel_id}, :prompt),
+    do: "Use `/prompt` in <##{channel_id}>. Your prompt allowance hasn't changed."
 
   defp error_message({:wrong_channel, channel_id}, pool),
     do: "Use `/#{pool}` in <##{channel_id}>. Your cooldown and rerolls haven't changed."

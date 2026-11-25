@@ -52,4 +52,36 @@ defmodule Salad.Repo.QuestDrawTest do
       assert QuestDraw.check(draw, now) == {:ok, :draw}
     end
   end
+
+  test "unused prompt allowance remains available throughout the hour, not just ten minutes" do
+    ends_at = DateTime.add(@drawn_at, 3600, :second)
+
+    for count <- [0, 1] do
+      draw = %QuestDraw{pool: :prompt, drawn_at: @drawn_at, reroll_count: count}
+
+      assert QuestDraw.check(draw, DateTime.add(@drawn_at, 600, :second)) == {:ok, :reroll}
+
+      assert QuestDraw.check(draw, DateTime.add(ends_at, -1, :microsecond)) ==
+               {:ok, :reroll}
+    end
+  end
+
+  test "three prompt uses block further requests until the original hour ends" do
+    draw = %QuestDraw{pool: :prompt, drawn_at: @drawn_at, reroll_count: 2}
+    ends_at = DateTime.add(@drawn_at, 3600, :second)
+
+    for now <- [@drawn_at, DateTime.add(ends_at, -1, :microsecond)] do
+      assert QuestDraw.check(draw, now) == {:error, {:cooldown, ends_at}}
+    end
+  end
+
+  test "prompt allowance resets at exactly one hour regardless of earlier usage" do
+    ends_at = DateTime.add(@drawn_at, 3600, :second)
+
+    for count <- [0, 1, 2] do
+      draw = %QuestDraw{pool: :prompt, drawn_at: @drawn_at, reroll_count: count}
+      assert QuestDraw.check(draw, ends_at) == {:ok, :draw}
+      assert QuestDraw.check(draw, DateTime.add(ends_at, 1, :microsecond)) == {:ok, :draw}
+    end
+  end
 end

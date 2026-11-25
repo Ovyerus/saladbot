@@ -4,7 +4,7 @@ An Elixir Discord bot with role-selection menus, cheese touch, QOTD, reusable qu
 
 ## Cheese-touch trivia prompts
 
-Configure cheese touch with `/cheesetouch enable channel:#cheesechat role:@CheeseTouch` after `/setup`. The parameterless `/prompt` command is usable only in that exact configured channel (not its threads), and requires either the configured cheese-touch role or **Administrator** permission (including the server owner). The role bypass applies to initial draws and rerolls, but does not bypass the channel restriction, cooldown, or reroll limit. Disabling cheese touch also disables `/prompt`; changing the cheese-touch channel or role updates the restriction immediately without resetting usage. `/quest-channel` does not affect prompts.
+Configure cheese touch with `/cheesetouch enable channel:#cheesechat role:@CheeseTouch` after `/setup`. The parameterless `/prompt` command is usable only in that exact configured channel (not its threads), and requires either the configured cheese-touch role or **Administrator** permission (including the server owner). The role bypass applies to every use, but does not bypass the channel restriction or hourly usage limit. Disabling cheese touch also disables `/prompt`; changing the cheese-touch channel or role updates the restriction immediately without resetting usage. `/quest-channel` does not affect prompts.
 
 Members with **Manage Server** permission (including administrators) manage a separate, per-server input list from any channel:
 
@@ -12,7 +12,7 @@ Members with **Manage Server** permission (including administrators) manage a se
 - `/prompt-pool list` — privately browse previews and IDs with moderator-only Previous/Next buttons.
 - `/prompt-pool remove prompt:<id>` — remove a prompt; autocomplete searches by text or ID.
 
-Run `/prompt` to publicly draw a random entry. It has the same timing as `/quest`: a two-hour per-user, per-server cooldown and two automatic rerolls within ten minutes of the original draw. Rerolls do not reset either window and avoid the current prompt when alternatives exist. The pool never depletes and nothing is scheduled. Prompt entries, cooldowns, and rerolls are independent of quests and survive restarts. Permission denials, wrong-channel requests, missing role-placeholder members, and failed delivery do not spend usage.
+Run `/prompt` to publicly draw a random entry, up to **three times per user, per server, in a one-hour window**. The window starts with the first successful use; the other two uses are available at any time within that hour and do not move its end. After three uses, further requests show when the allowance resets. The first use after the hour expires starts a new window with three uses; unused uses do not carry over. Each subsequent use avoids the current prompt when alternatives exist. The pool never depletes and nothing is scheduled. Prompt entries and usage are independent of quests and survive restarts. Permission denials, wrong-channel requests, missing role-placeholder members, and failed delivery do not spend usage. `/quest` keeps its existing two-hour cooldown and ten-minute reroll window.
 
 Responses mention the requester:
 

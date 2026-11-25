@@ -7,6 +7,7 @@ defmodule Salad.Repo.QuestDraw do
 
   @cooldown_seconds 2 * 60 * 60
   @reroll_seconds 10 * 60
+  @prompt_window_seconds 60 * 60
   @max_rerolls 2
 
   schema "quest_draws" do
@@ -31,10 +32,26 @@ defmodule Salad.Repo.QuestDraw do
     |> Changeset.unique_constraint([:guild_id, :user_id, :pool])
   end
 
-  # Both windows are anchored to the original draw, never to its reroll.
+  # Windows stay anchored to the first draw, never to subsequent uses.
   def check(nil, _now), do: {:ok, :draw}
 
-  def check(%__MODULE__{} = draw, now) do
+  def check(%__MODULE__{pool: :prompt} = draw, now) do
+    ends_at = DateTime.add(draw.drawn_at, @prompt_window_seconds, :second)
+
+    cond do
+      DateTime.compare(now, ends_at) != :lt ->
+        {:ok, :draw}
+
+      # One initial draw plus the two persisted additional draws makes three uses.
+      draw.reroll_count < @max_rerolls ->
+        {:ok, :reroll}
+
+      true ->
+        {:error, {:cooldown, ends_at}}
+    end
+  end
+
+  def check(%__MODULE__{pool: :quest} = draw, now) do
     cooldown_ends = DateTime.add(draw.drawn_at, @cooldown_seconds, :second)
     reroll_ends = DateTime.add(draw.drawn_at, @reroll_seconds, :second)
 
