@@ -169,7 +169,7 @@ defmodule Salad.Commands.CheeseTouch do
     with {:ok} <- reply(ctx, %{type: 5, data: %{flags: 1 <<< 6}}),
          {:ok, channel_id, member} <- Salad.CheeseTouch.run(ctx.guild_id, :admin_reroll),
          {:ok, _} <-
-           Api.create_message(channel_id, "<@#{member.user_id}> now has the cheese touch!") do
+           Api.create_message(channel_id, Salad.CheeseTouch.announcement(member.user_id)) do
       Api.edit_interaction_response(ctx.token, %{
         content: "Cheese touch has been rerolled and selected <@#{member.user_id}>."
         # flags: 1 <<< 6

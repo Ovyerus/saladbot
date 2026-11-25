@@ -46,7 +46,7 @@ defmodule Salad.Commands.Transfer do
          {:ok, _} <-
            Api.create_message(
              channel_id,
-             "<@#{ctx.member.user_id}> has passed the cheese touch onto <@#{member.user_id}>!"
+             Salad.CheeseTouch.announcement(member.user_id, ctx.member.user_id)
            ) do
       Api.edit_interaction_response(ctx.token, %{
         content: "Cheese touch has successfully been transferred to <@#{member.user_id}>."

@@ -2,24 +2,26 @@ defmodule Salad.Quest.PoolList do
   @moduledoc false
 
   alias Salad.CommandSystem.Structs.Components.ActionRow
-  alias Salad.Components.QuestPoolPage
+  alias Salad.Components.{PromptPoolPage, QuestPoolPage}
   alias Salad.Repo.QuestChoice
 
-  def page(guild_id, user_id, requested_page \\ 0) do
+  def page(guild_id, user_id, requested_page \\ 0, pool \\ :quest) do
     guild_id
-    |> QuestChoice.get_page_for_guild(requested_page)
-    |> render(guild_id, user_id)
+    |> QuestChoice.get_page_for_guild(requested_page, pool)
+    |> render(guild_id, user_id, pool)
   end
 
-  def render(%{total: 0}, _guild_id, _user_id) do
+  def render(data, guild_id, user_id, pool \\ :quest)
+
+  def render(%{total: 0}, _guild_id, _user_id, pool) do
     %{
-      content: "This server's quest pool is empty. Add a quest with `/quest-pool add`.",
+      content: "This server's #{pool} pool is empty. Add a #{pool} with `/#{pool}-pool add`.",
       components: [],
       allowed_mentions: %{parse: []}
     }
   end
 
-  def render(%{choices: choices, page: page, pages: pages, total: total}, guild_id, user_id) do
+  def render(%{choices: choices, page: page, pages: pages, total: total}, guild_id, user_id, pool) do
     lines =
       Enum.map(choices, fn choice ->
         preview = choice.content |> String.replace(~r/\s+/u, " ") |> truncate(180)
@@ -29,19 +31,25 @@ defmodule Salad.Quest.PoolList do
     # Eight bounded previews plus IDs/header fit within Discord's 2000 UTF-16 units.
     content =
       IO.iodata_to_binary([
-        "Quests in this server's pool (ID: quest):\n",
+        "#{String.capitalize(to_string(pool))}s in this server's pool (ID: #{pool}):\n",
         lines,
-        "\nPage #{page + 1}/#{pages} — #{total} quests"
+        "\nPage #{page + 1}/#{pages} — #{total} #{pool}s"
       ])
 
+    component =
+      case pool do
+        :quest -> QuestPoolPage
+        :prompt -> PromptPoolPage
+      end
+
     buttons = [
-      QuestPoolPage.new(
+      component.new(
         label: "Previous",
         style: 2,
         disabled: page == 0,
         arg: argument(guild_id, user_id, max(page - 1, 0))
       ),
-      QuestPoolPage.new(
+      component.new(
         label: "Next",
         style: 2,
         disabled: page == pages - 1,

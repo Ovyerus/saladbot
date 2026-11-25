@@ -13,6 +13,7 @@ defmodule Salad.Repo.QuestDraw do
     field :user_id, :integer
     field :drawn_at, :utc_datetime_usec
     field :reroll_count, :integer, default: 0
+    field :pool, Ecto.Enum, values: [:quest, :prompt], default: :quest
     belongs_to :guild, Repo.Guild, type: :integer
     belongs_to :choice, Repo.QuestChoice
     timestamps()
@@ -20,14 +21,14 @@ defmodule Salad.Repo.QuestDraw do
 
   def changeset(draw, params) do
     draw
-    |> Changeset.cast(params, [:guild_id, :user_id, :choice_id, :drawn_at, :reroll_count])
-    |> Changeset.validate_required([:guild_id, :user_id, :drawn_at, :reroll_count])
+    |> Changeset.cast(params, [:guild_id, :user_id, :choice_id, :drawn_at, :reroll_count, :pool])
+    |> Changeset.validate_required([:guild_id, :user_id, :drawn_at, :reroll_count, :pool])
     |> Changeset.validate_number(:reroll_count,
       greater_than_or_equal_to: 0,
       less_than_or_equal_to: @max_rerolls
     )
     |> Changeset.check_constraint(:reroll_count, name: :quest_draws_reroll_count_range)
-    |> Changeset.unique_constraint([:guild_id, :user_id])
+    |> Changeset.unique_constraint([:guild_id, :user_id, :pool])
   end
 
   # Both windows are anchored to the original draw, never to its reroll.

@@ -2,6 +2,17 @@ defmodule Salad.CheeseTouch do
   alias Salad.Repo
   require Logger
 
+  def announcement(user_id, from_user_id \\ nil) do
+    headline =
+      case from_user_id do
+        nil -> "<@#{user_id}> now has the cheese touch!"
+        from -> "<@#{from}> has passed the cheese touch onto <@#{user_id}>!"
+      end
+
+    headline <>
+      "\nUse /transfer to spread it to another player, and use /prompt to enter a trivia show for arrokoin."
+  end
+
   def run(guild_id, reason, prechosen_victim \\ nil) do
     with %Repo.Guild{cheese_touch_channel: channel_id, cheese_touch_role: role_id}
          when channel_id != nil and role_id != nil <-

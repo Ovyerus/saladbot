@@ -16,17 +16,20 @@ defmodule Salad.Commands.QuestPool do
     do: [guild_only(), permissions([:manage_guild]), guild_setup()]
 
   @impl true
-  def options,
+  def options, do: options(:quest)
+
+  def options(pool),
     do: [
       %Option{
         name: "add",
         type: Option.Type.subcommand(),
-        description: "Add a reusable quest to the pool.",
+        description: "Add a reusable #{pool} to the pool.",
         options: [
           %Option{
-            name: "quest",
+            name: to_string(pool),
             type: Option.Type.string(),
-            description: "Quest text; use {user_from:ROLE_ID} to pick a member with that role.",
+            description:
+              "#{String.capitalize(to_string(pool))} text; use {user_from:ROLE_ID} to pick a member with that role.",
             required: true
           }
         ]
@@ -34,12 +37,12 @@ defmodule Salad.Commands.QuestPool do
       %Option{
         name: "remove",
         type: Option.Type.subcommand(),
-        description: "Remove a quest from the pool.",
+        description: "Remove a #{pool} from the pool.",
         options: [
           %Option{
-            name: "quest",
+            name: to_string(pool),
             type: Option.Type.string(),
-            description: "The quest ID to remove; search by text or ID.",
+            description: "The #{pool} ID to remove; search by text or ID.",
             required: true,
             autocomplete: true
           }
@@ -48,22 +51,26 @@ defmodule Salad.Commands.QuestPool do
       %Option{
         name: "list",
         type: Option.Type.subcommand(),
-        description: "List quest text and IDs in this server's pool."
+        description: "List #{pool} text and IDs in this server's pool."
       }
     ]
 
   @impl true
-  def autocomplete(%{data: %{options: options}, guild_id: guild_id} = ev)
+  def autocomplete(ev), do: autocomplete(ev, :quest)
+
+  def autocomplete(%{data: %{options: options}, guild_id: guild_id} = ev, pool)
       when is_list(options) do
     # The dispatcher does not run predicates for autocomplete interactions.
     if Enum.all?(predicates(), fn predicate -> predicate.(ev) == true end) do
+      option_name = to_string(pool)
+
       case focused_option(options) do
-        %{name: "quest", value: text} when is_binary(text) ->
+        %{name: ^option_name, value: text} when is_binary(text) ->
           choices =
             if text == "" do
-              guild_id |> QuestChoice.get_for_guild() |> Enum.take(25)
+              guild_id |> QuestChoice.get_for_guild(pool) |> Enum.take(25)
             else
-              QuestChoice.search_for_guild(guild_id, text)
+              QuestChoice.search_for_guild(guild_id, text, pool)
             end
 
           Enum.map(choices, fn choice ->
@@ -79,23 +86,28 @@ defmodule Salad.Commands.QuestPool do
     end
   end
 
-  def autocomplete(_), do: []
+  def autocomplete(_, _pool), do: []
 
   @impl true
-  def run(ctx) do
+  def run(ctx), do: run(ctx, :quest)
+
+  def run(ctx, pool) do
     case ctx.options do
-      %{"add" => _} -> run_add(ctx)
-      %{"remove" => _} -> run_remove(ctx)
-      %{"list" => _} -> run_list(ctx)
+      %{"add" => _} -> run_add(ctx, pool)
+      %{"remove" => _} -> run_remove(ctx, pool)
+      %{"list" => _} -> run_list(ctx, pool)
     end
   end
 
-  defp run_add(ctx) do
-    %{"quest" => %{value: content}} = ctx.options["add"].value
+  defp run_add(ctx, pool) do
+    %{value: content} = Map.fetch!(ctx.options["add"].value, to_string(pool))
 
-    case QuestChoice.create(ctx.guild_id, content) do
+    case QuestChoice.create(ctx.guild_id, content, pool) do
       {:ok, choice} ->
-        respond(ctx, "Quest added with ID `#{choice.id}`. It stays in the pool until removed.")
+        respond(
+          ctx,
+          "#{String.capitalize(to_string(pool))} added with ID `#{choice.id}`. It stays in the pool until removed."
+        )
 
       {:error, %Ecto.Changeset{} = changeset} ->
         errors =
@@ -110,28 +122,29 @@ defmodule Salad.Commands.QuestPool do
           end)
           |> Enum.join("; ")
 
-        respond(ctx, "Could not add the quest: #{errors}")
+        respond(ctx, "Could not add the #{pool}: #{errors}")
     end
   end
 
-  defp run_remove(ctx) do
-    %{"quest" => %{value: id_text}} = ctx.options["remove"].value
+  defp run_remove(ctx, pool) do
+    %{value: id_text} = Map.fetch!(ctx.options["remove"].value, to_string(pool))
+    title = String.capitalize(to_string(pool))
 
     with {id, ""} when id > 0 and id <= 9_223_372_036_854_775_807 <- Integer.parse(id_text),
-         %QuestChoice{} = choice <- QuestChoice.get(ctx.guild_id, id),
+         %QuestChoice{} = choice <- QuestChoice.get(ctx.guild_id, id, pool),
          {:ok, _} <- QuestChoice.delete(choice) do
-      respond(ctx, "Quest `#{id}` removed from this server's pool.")
+      respond(ctx, "#{title} `#{id}` removed from this server's pool.")
     else
       _ ->
         respond(
           ctx,
-          "Quest not found in this server's pool. Select a quest using autocomplete or `/quest-pool list`."
+          "#{title} not found in this server's pool. Select a #{pool} using autocomplete or `/#{pool}-pool list`."
         )
     end
   end
 
-  defp run_list(ctx) do
-    data = PoolList.page(ctx.guild_id, ctx.user.id) |> Map.put(:flags, 64)
+  defp run_list(ctx, pool) do
+    data = PoolList.page(ctx.guild_id, ctx.user.id, 0, pool) |> Map.put(:flags, 64)
     reply(ctx, %{type: 4, data: data})
   end
 

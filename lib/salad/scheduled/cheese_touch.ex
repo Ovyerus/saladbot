@@ -7,7 +7,7 @@ defmodule Salad.Scheduled.CheeseTouch do
          {:ok, _} <-
            Nostrum.Api.create_message(
              channel_id,
-             "<@#{member.user_id}> now has the cheese touch!"
+             Salad.CheeseTouch.announcement(member.user_id)
            ) do
       :ok
     end

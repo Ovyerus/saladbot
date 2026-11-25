@@ -1,6 +1,32 @@
 # Salad
 
-An Elixir Discord bot with role-selection menus, cheese touch, QOTD, and reusable quests.
+An Elixir Discord bot with role-selection menus, cheese touch, QOTD, reusable quests, and trivia prompts.
+
+## Cheese-touch trivia prompts
+
+Configure cheese touch with `/cheesetouch enable channel:#cheesechat role:@CheeseTouch` after `/setup`. The parameterless `/prompt` command is usable only in that exact configured channel (not its threads), by anyone, whether or not they hold the cheese-touch role. Disabling cheese touch also disables `/prompt`; changing the cheese-touch channel moves the restriction immediately without resetting usage. `/quest-channel` does not affect prompts.
+
+Members with **Manage Server** permission (including administrators) manage a separate, per-server input list from any channel:
+
+- `/prompt-pool add prompt:<text>` — add a reusable trivia prompt and receive its ID.
+- `/prompt-pool list` — privately browse previews and IDs with moderator-only Previous/Next buttons.
+- `/prompt-pool remove prompt:<id>` — remove a prompt; autocomplete searches by text or ID.
+
+Run `/prompt` to publicly draw a random entry. It has the same timing as `/quest`: a two-hour per-user, per-server cooldown and two automatic rerolls within ten minutes of the original draw. Rerolls do not reset either window and avoid the current prompt when alternatives exist. The pool never depletes and nothing is scheduled. Prompt entries, cooldowns, and rerolls are independent of quests and survive restarts. Wrong-channel requests, missing role-placeholder members, and failed delivery do not spend usage.
+
+Responses mention the requester:
+
+```text
+{user}, your trivia prompt is: {choice}
+```
+
+Prompts support the same `{user_from:ROLE_ID}` placeholders, message-length validation, and safe mentions as quests below. This command supplies the trivia prompt; it does not judge answers or award currency.
+
+Automatic cheese-touch rotations, moderator rerolls, and transfers now include:
+
+```text
+Use /transfer to spread it to another player, and use /prompt to enter a trivia show for arrokoin.
+```
 
 ## Quests
 
@@ -68,7 +94,7 @@ For an OTP release:
 ./bin/salad eval "Salad.Release.migrate()"
 ```
 
-The new command modules are discovered by the existing command registration system.
+The new command modules are discovered by the existing command registration system. Re-sync slash commands after deployment so Discord exposes `/prompt` and `/prompt-pool`. The prompt migration preserves existing quest entries and cooldowns; rolling it back deletes prompt entries and usage only.
 
 ### Tests
 
@@ -76,4 +102,4 @@ The new command modules are discovered by the existing command registration syst
 mix test --no-start
 ```
 
-`--no-start` runs the tests without starting the Discord connection or the application's database supervision tree. Quest tests cover cooldown/reroll boundaries, role-placeholder rendering using Nostrum's member cache, pagination boundaries and Discord size limits, and button authorization.
+`--no-start` runs the tests without starting the Discord connection or the application's database supervision tree. Quest/prompt tests cover cooldown/reroll boundaries, role-placeholder rendering using Nostrum's member cache, pagination boundaries and Discord size limits, and button authorization.

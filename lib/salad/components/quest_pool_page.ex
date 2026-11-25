@@ -9,13 +9,13 @@ defmodule Salad.Components.QuestPoolPage do
   @impl true
   def run(ev, arg), do: Interaction.create_response(ev, response(ev, arg))
 
-  def response(ev, arg) do
+  def response(ev, arg, pool \\ :quest) do
     with {:ok, <<guild_id::unsigned-64, user_id::unsigned-64, page::unsigned-64>>} <-
            Base.url_decode64(arg, padding: false),
          true <- ev.guild_id == guild_id and ev.user.id == user_id,
          true <- access(ev) do
       # Type 7 edits the clicked message, preserving its ephemeral visibility.
-      %{type: 7, data: PoolList.page(guild_id, user_id, page)}
+      %{type: 7, data: PoolList.page(guild_id, user_id, page, pool)}
     else
       message when is_binary(message) ->
         error(message)
